@@ -1,0 +1,5 @@
+.vs/*
+*/.vs
+.ambuild2
+*.log
+*.obj
