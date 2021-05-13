@@ -1,0 +1,9 @@
+BasedOnStyle: LLVM
+IndentWidth: 4
+AllowShortFunctionsOnASingleLine: None
+AlignConsecutiveAssignments: true
+BreakBeforeBraces: Allman
+SpaceBeforeParens: Always
+AlignTrailingComments: true
+PointerAlignment: Right
+SpaceBeforeSquareBrackets: true
