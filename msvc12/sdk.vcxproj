@@ -1178,6 +1178,7 @@
     <ClInclude Include="..\sentry.h" />
     <ClInclude Include="..\smsdk_config.h" />
     <ClInclude Include="..\..\smsdk_ext.h" />
+    <ClInclude Include="..\SPSentryFrame.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

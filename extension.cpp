@@ -33,7 +33,9 @@
 #include <string>
 #include <DebugListener.h>
 #include <sentry.h>
+#include <IPluginSys.h>
 
+using namespace SourceMod;
 using namespace std;
 
 /**
@@ -42,8 +44,8 @@ using namespace std;
  */
 
 CTFErrorLogger g_Sample;		/**< Global singleton for extension's main interface */
-
 SMEXT_LINK(&g_Sample);
+IPluginManager* g_pPlugins = NULL;
 DebugListener debugListener;
 
 void CTFErrorLogger::Print(const char* toPrint)
@@ -54,23 +56,24 @@ void CTFErrorLogger::Print(const char* toPrint)
 
 bool CTFErrorLogger::SDK_OnLoad(char* error, size_t maxlength, bool late)
 {
-	Print("Loaded!");
-
-	auto engine = g_pSM->GetScriptingEngine();
-	
-	if (engine != nullptr)
-	{
-		debugListener.onError = [this](const char* message) { Print(message); };
-		auto oldListener = engine->SetDebugListener(&debugListener);
-		debugListener.oldListener = oldListener;
-
-		Print("Added Debug Listener");
-	}
+	SM_GET_IFACE(PLUGINSYSTEM, g_pPlugins);
 
 	sentry_options_t* options = sentry_options_new();
 	sentry_options_set_dsn(options, "https://68a19ade4e68415e9827e30c44d384b0@sentry.creators.tf/4");
 	sentry_options_set_release(options, SMEXT_CONF_NAME);
 	sentry_init(options);
+	Print("Sentry Initalised!");
+
+	auto engine = g_pSM->GetScriptingEngine();
+	
+	if (engine != nullptr)
+	{
+		debugListener.onError = [this](const char* message) { Print("Error was logged"); };
+		auto oldListener = engine->SetDebugListener(&debugListener);
+		debugListener.oldListener = oldListener;
+
+		Print("Added Debug Listener");
+	}
 
 	return true;
 }
