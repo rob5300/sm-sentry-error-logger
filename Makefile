@@ -5,21 +5,21 @@
 ### EDIT THESE PATHS FOR YOUR OWN SETUP ###
 ###########################################
 
-SMSDK = ../..
-HL2SDK_ORIG = ../../../hl2sdk
-HL2SDK_OB = ../../../hl2sdk-ob
-HL2SDK_CSS = ../../../hl2sdk-css
-HL2SDK_OB_VALVE = ../../../hl2sdk-ob-valve
-HL2SDK_L4D = ../../../hl2sdk-l4d
-HL2SDK_L4D2 = ../../../hl2sdk-l4d2
-HL2SDK_CSGO = ../../../hl2sdk-csgo
-MMSOURCE19 = ../../../mmsource-1.9
+SMSDK = vendor/sourcemod
+MMSOURCE19 = vendor/metamod-source
+HL2SDK_ORIG = vendor/source-sdk-2013/mp/src
+HL2SDK_OB = UNUSED
+HL2SDK_CSS = UNUSED
+HL2SDK_OB_VALVE = UNUSED
+HL2SDK_L4D = UNUSED
+HL2SDK_L4D2 = UNUSED
+HL2SDK_CSGO = UNUSED
 
 #####################################
 ### EDIT BELOW FOR OTHER PROJECTS ###
 #####################################
 
-PROJECT = sample
+PROJECT = sentrysdk
 
 #Uncomment for Metamod: Source enabled extension
 #USEMETA = true

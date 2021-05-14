@@ -1,0 +1,15 @@
+[submodule "vendor/sourcemod"]
+	path = vendor/sourcemod
+	url = https://github.com/alliedmodders/sourcemod.git
+	branch = sourcemod-1.7.2
+[submodule "vendor/source-sdk-2013"]
+	path = vendor/source-sdk-2013
+	url = git@github.com:ValveSoftware/source-sdk-2013.git
+[submodule "vendor/metamod-source"]
+	path = vendor/metamod-source
+	url = git@github.com:alliedmodders/metamod-source.git
+	branch = master
+[submodule "vendor/gcc"]
+	path = vendor/gcc
+	url = git://gcc.gnu.org/git/gcc.git
+	branch = releases/gcc-4.2.4
