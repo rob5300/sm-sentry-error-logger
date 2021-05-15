@@ -1168,11 +1168,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\CTFErrorLoggerConfig.cpp" />
     <ClCompile Include="..\DebugListener.cpp" />
     <ClCompile Include="..\extension.cpp" />
     <ClCompile Include="..\..\smsdk_ext.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\CTFErrorLoggerConfig.h" />
     <ClInclude Include="..\DebugListener.h" />
     <ClInclude Include="..\extension.h" />
     <ClInclude Include="..\sentry.h" />

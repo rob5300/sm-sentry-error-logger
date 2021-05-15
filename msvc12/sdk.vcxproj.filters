@@ -27,6 +27,9 @@
     <ClCompile Include="..\DebugListener.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\CTFErrorLoggerConfig.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\extension.h">
@@ -45,6 +48,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\SPSentryFrame.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CTFErrorLoggerConfig.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
