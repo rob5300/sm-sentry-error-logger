@@ -61,7 +61,9 @@ bool CTFErrorLogger::SDK_OnLoad(char* error, size_t maxlength, bool late)
     try
     {
         SM_GET_IFACE (TEXTPARSERS, textParsers);
-        config = &CTFErrorLoggerConfig();
+
+        //Load the config and continue if this was successful.
+        config = new CTFErrorLoggerConfig();
         string path = string(smutils->GetSourceModPath());
         path += "\\configs\\ctferrorlogger.cfg";
         auto errorCode = textParsers->ParseFile_SMC(path.c_str(), config, NULL);
@@ -76,21 +78,24 @@ bool CTFErrorLogger::SDK_OnLoad(char* error, size_t maxlength, bool late)
             Print ("Config Loaded!");
         }
 
+        //Setup sentry
         sentry_options_t *options = sentry_options_new ();
-        sentry_options_set_dsn (
-            options, config->sentry_dsn_url);
+        sentry_options_set_dsn (options, config->sentry_dsn_url->c_str());
         sentry_options_set_release (options, SMEXT_CONF_NAME);
         sentry_init (options);
         Print ("Sentry Initalised!");
 
+        //Add our debug listener
         auto engine = g_pSM->GetScriptingEngine ();
-
         if (engine != nullptr)
         {
+            debugListener.config = config;
             debugListener.onError = [this] (const char *message) {
                 Print ("Error was logged");
             };
             auto oldListener = engine->SetDebugListener (&debugListener);
+
+            //Assign old listener so our new one can forward events back to it.
             debugListener.oldListener = oldListener;
 
             Print ("Added Debug Listener");

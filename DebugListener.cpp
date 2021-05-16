@@ -1,6 +1,4 @@
 #include "DebugListener.h"
-#define SENTRY_BUILD_STATIC 1
-#include <sentry.h>
 
 using namespace SourcePawn;
 using namespace std;
@@ -8,14 +6,14 @@ using namespace std;
 #define sentry_setstrvalue(object, strkey, strvalue) sentry_value_set_by_key(object, strkey, sentry_value_new_string(strvalue));
 #define sentry_setintvalue(object, strkey, intvalue) sentry_value_set_by_key(object, strkey, sentry_value_new_int32(intvalue));
 
-void DebugListener::OnDebugSpew(const char* msg, ...)
+void DebugListener::OnDebugSpew (const char *msg, ...)
 {
 	if (oldListener)
 	{
 		oldListener->OnDebugSpew(msg);
 	}
 	onError(msg);
-	const sentry_value_t event = sentry_value_new_message_event(SENTRY_LEVEL_DEBUG, "Debug", msg);
+    const sentry_value_t event = GetBaseMessage ("Debug", msg);
 	sentry_capture_event(event);
 }
 
@@ -59,19 +57,25 @@ void DebugListener::ReportError(const IErrorReport& report, IFrameIterator& iter
 			}
 		}
 		iter.Reset();
+
+		if (blame == nullptr)
+		{
+            blame = "unknown";
+		}
 	}
 	catch (std::exception e)
 	{
 		blame = "unknown";
 	}
-	sentry_value_t event = sentry_value_new_message_event(SENTRY_LEVEL_ERROR, blame, report.Message());
-	sentry_setstrvalue(event, "server_name", "server_name")
+	
+	sentry_value_t event = GetBaseMessage (blame, report.Message ());
 
 	sentry_value_t error = sentry_value_new_object();
 	sentry_setstrvalue(error, "type", "Exception")
 	sentry_setstrvalue(error, "value", report.Message())
 	sentry_setstrvalue(error, "module", blame)
 
+	//Construct the stack trace manually using the event data.
 	auto stacktraceList = DebugListener::GetStackTrace(iter);
 	sentry_value_t frames = sentry_value_new_list();
 	for (SPSentryFrame& trace : stacktraceList)
@@ -134,6 +138,25 @@ vector<SPSentryFrame> DebugListener::GetStackTrace(IFrameIterator &iter)
 	}
 
 	return trace;
+}
+
+/// <summary>
+/// Construct a base message sentry event and add common message data.
+/// </summary>
+/// <param name="blame">Error source</param>
+/// <param name="message">Main error message</param>
+/// <returns>New Sentry event object</returns>
+sentry_value_t DebugListener::GetBaseMessage (const char *blame, const char *message)
+{
+	sentry_value_t event = sentry_value_new_message_event (SENTRY_LEVEL_ERROR, blame, message);
+    sentry_setstrvalue (event, "server_name", config->server_name->c_str ());
+    sentry_setstrvalue (event, "environment", config->environment->c_str ());
+
+    sentry_value_t tags = sentry_value_new_object ();
+    sentry_setstrvalue (tags, "server_id", config->server_id->c_str());
+    sentry_setstrvalue (tags, "region", config->region->c_str());
+    sentry_value_set_by_key (event, "tags", tags);
+	return event;
 }
 
 void DebugListener::OnContextExecuteError(IPluginContext* ctx, IContextTrace* error)
