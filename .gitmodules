@@ -9,7 +9,6 @@
 	path = vendor/metamod-source
 	url = git@github.com:alliedmodders/metamod-source.git
 	branch = master
-[submodule "vendor/gcc"]
-	path = vendor/gcc
-	url = git://gcc.gnu.org/git/gcc.git
-	branch = releases/gcc-4.2.4
+[submodule "vendor/ambuild"]
+	path = vendor/ambuild
+	url = git@github.com:alliedmodders/ambuild.git
