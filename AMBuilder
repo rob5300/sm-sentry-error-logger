@@ -7,8 +7,7 @@ projectName = 'CTFErrorLogger'
 sourceFiles = [
   'extension.cpp',
   'DebugListener.cpp',
-  'sentry.h',
-  'SPSentryFrame.h'
+  'CTFErrorLoggerConfig.cpp'
 ]
 
 ###############

@@ -34,6 +34,7 @@
 #include <DebugListener.h>
 #include <sentry.h>
 #include <IPluginSys.h>
+#include "CTFErrorLoggerConfig.h"
 
 using namespace SourceMod;
 using namespace std;
@@ -45,8 +46,9 @@ using namespace std;
 
 CTFErrorLogger g_Sample;		/**< Global singleton for extension's main interface */
 SMEXT_LINK(&g_Sample);
-IPluginManager* g_pPlugins = NULL;
 DebugListener debugListener;
+ITextParsers* textParsers;
+CTFErrorLoggerConfig* config;
 
 void CTFErrorLogger::Print(const char* toPrint)
 {
@@ -56,38 +58,69 @@ void CTFErrorLogger::Print(const char* toPrint)
 
 bool CTFErrorLogger::SDK_OnLoad(char* error, size_t maxlength, bool late)
 {
-	SM_GET_IFACE(PLUGINSYSTEM, g_pPlugins);
+    try
+    {
+        SM_GET_IFACE (TEXTPARSERS, textParsers);
 
-	sentry_options_t* options = sentry_options_new();
-	sentry_options_set_dsn(options, "https://68a19ade4e68415e9827e30c44d384b0@sentry.creators.tf/4");
-	sentry_options_set_release(options, SMEXT_CONF_NAME);
-	sentry_init(options);
-	Print("Sentry Initalised!");
+        //Load the config and continue if this was successful.
+        config = new CTFErrorLoggerConfig();
+        string path = string(smutils->GetSourceModPath());
+        path += "\\configs\\ctferrorlogger.cfg";
+        auto errorCode = textParsers->ParseFile_SMC(path.c_str(), config, NULL);
+        if (!errorCode == SMCError::SMCError_Okay)
+        {
+            string errorMessage = string ("Failed to parse config file, error was: ") + to_string(static_cast<int>(errorCode));
+            Print (errorMessage.c_str());
+            return false;
+        }
+        else
+        {
+            Print ("Config Loaded!");
+        }
 
-	auto engine = g_pSM->GetScriptingEngine();
-	
-	if (engine != nullptr)
-	{
-		debugListener.onError = [this](const char* message) { Print("Error was logged"); };
-		auto oldListener = engine->SetDebugListener(&debugListener);
-		debugListener.oldListener = oldListener;
+        //Setup sentry
+        sentry_options_t *options = sentry_options_new ();
+        sentry_options_set_dsn (options, config->sentry_dsn_url->c_str());
+        sentry_options_set_release (options, SMEXT_CONF_NAME);
+        sentry_init (options);
+        Print ("Sentry Initalised!");
 
-		Print("Added Debug Listener");
-	}
+        //Add our debug listener
+        auto engine = g_pSM->GetScriptingEngine ();
+        if (engine != nullptr)
+        {
+            debugListener.config = config;
+            debugListener.onError = [this] (const char *message) {
+                Print ("Error was logged");
+            };
+            auto oldListener = engine->SetDebugListener (&debugListener);
 
-	return true;
+            //Assign old listener so our new one can forward events back to it.
+            debugListener.oldListener = oldListener;
+
+            Print ("Added Debug Listener");
+        }
+
+        return true;
+    }
+    catch (const exception &e)
+    {
+        Print (e.what());
+        return false;
+    }
 }
 
 void CTFErrorLogger::SDK_OnUnload()
 {
 	try
 	{
+        delete config;
 		auto engine = g_pSM->GetScriptingEngine();
 		engine->SetDebugListener(debugListener.oldListener);
 		sentry_close();
-		Print("Unloaded extensiona and restored old Debug Listener");
+		Print("Unloaded extension and restored old Debug Listener");
 	}
-	catch (exception e)
+	catch (exception &e)
 	{
 		Print(strcat("Things may break, Failed to fully unload due to: ", e.what()));
 	}

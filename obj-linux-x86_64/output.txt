@@ -1,0 +1,2 @@
+Spawned worker (pid: 95)
+[95] c++ _mnt_d_VS_Projects_SOURCEMOD_sourcemod_public_smsdk_ext.o extension.o DebugListener.o sentry.o SPSentryFrame.o CTFErrorLoggerConfig.o libvstdlib_srv.so libtier0_srv.so -m32 -Wl,--exclude-libs,ALL -lm -static-libgcc /mnt/d/VS Projects/SOURCEMOD/hl2sdk-tf2/lib/linux/tier1_i486.a /mnt/d/VS Projects/SOURCEMOD/hl2sdk-tf2/lib/linux/mathlib_i486.a -shared -o CTFErrorLogger.ext.2.tf2.so

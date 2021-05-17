@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SPSENTRYFRAME
+#define SPSENTRYFRAME
 #include <cstdint>
 
 class SPSentryFrame
@@ -8,3 +9,4 @@ public:
 	int32_t lineno;
 	const char* function;
 };
+#endif
