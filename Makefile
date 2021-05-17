@@ -13,18 +13,18 @@ HL2SDK_OB_VALVE = ../../../hl2sdk-ob-valve
 HL2SDK_L4D = ../../../hl2sdk-l4d
 HL2SDK_L4D2 = ../../../hl2sdk-l4d2
 HL2SDK_CSGO = ../../../hl2sdk-csgo
-MMSOURCE19 = ../../../mmsource-1.9
+MMSOURCE19 = ../../../mmsource-1.10
 
 #####################################
 ### EDIT BELOW FOR OTHER PROJECTS ###
 #####################################
 
-PROJECT = sample
+PROJECT = ctferrorlogger
 
 #Uncomment for Metamod: Source enabled extension
 #USEMETA = true
 
-OBJECTS = smsdk_ext.cpp extension.cpp
+OBJECTS = smsdk_ext.cpp extension.cpp DebugListener.cpp CTFErrorLoggerConfig.cpp
 
 ##############################################
 ### CONFIGURE ANY OTHER FLAGS/OPTIONS HERE ###
@@ -34,7 +34,7 @@ C_OPT_FLAGS = -DNDEBUG -O3 -funroll-loops -pipe -fno-strict-aliasing
 C_DEBUG_FLAGS = -D_DEBUG -DDEBUG -g -ggdb3
 C_GCC4_FLAGS = -fvisibility=hidden
 CPP_GCC4_FLAGS = -fvisibility-inlines-hidden
-CPP = gcc
+CPP = g++
 CPP_OSX = clang
 
 ##########################
@@ -109,7 +109,7 @@ else
 	LIB_SUFFIX = .$(LIB_EXT)
 endif
 
-INCLUDE += -I. -I.. -Isdk -I$(SMSDK)/public -I$(SMSDK)/sourcepawn/include
+INCLUDE += -I. -I.. -Isdk -I$(SMSDK)/public -I$(SMSDK)/sourcepawn/include -I$(SMSDK)/sourcepawn/third_party -I$(SMSDK)/sourcepawn/third_party/amtl/amtl -I$(SMSDK)/sourcepawn/third_party/amtl
 
 ifeq "$(USEMETA)" "true"
 	LINK_HL2 = $(HL2LIB)/tier1_i486.a $(LIB_PREFIX)vstdlib$(LIB_SUFFIX) $(LIB_PREFIX)tier0$(LIB_SUFFIX)
@@ -129,9 +129,9 @@ endif
 LINK += -m32 -lm -ldl
 
 CFLAGS += -DPOSIX -Dstricmp=strcasecmp -D_stricmp=strcasecmp -D_strnicmp=strncasecmp -Dstrnicmp=strncasecmp \
-	-D_snprintf=snprintf -D_vsnprintf=vsnprintf -D_alloca=alloca -Dstrcmpi=strcasecmp -DCOMPILER_GCC -Wall -Werror \
+	-D_snprintf=snprintf -D_vsnprintf=vsnprintf -D_alloca=alloca -Dstrcmpi=strcasecmp -DCOMPILER_GCC -Wall \
 	-Wno-overloaded-virtual -Wno-switch -Wno-unused -msse -DSOURCEMOD_BUILD -DHAVE_STDINT_H -m32
-CPPFLAGS += -Wno-non-virtual-dtor -fno-exceptions -fno-rtti -std=c++11
+CPPFLAGS += -Wno-non-virtual-dtor -fno-rtti -std=c++14 -fpermissive -fexceptions
 
 ################################################
 ### DO NOT EDIT BELOW HERE FOR MOST PROJECTS ###
@@ -201,7 +201,7 @@ OBJ_BIN := $(OBJECTS:%.cpp=$(BIN_DIR)/%.o)
 MAKEFILE_NAME := $(CURDIR)/$(word $(words $(MAKEFILE_LIST)),$(MAKEFILE_LIST))
 
 $(BIN_DIR)/%.o: %.cpp
-	$(CPP) $(INCLUDE) $(CFLAGS) $(CPPFLAGS) -o $@ -c $<
+	$(CPP) -L/mnt/d/ -lsentry $(INCLUDE) $(CFLAGS) $(CPPFLAGS) -o $@ -c $<
 
 all: check
 	mkdir -p $(BIN_DIR)
@@ -220,7 +220,7 @@ check:
 	fi
 
 extension: check $(OBJ_BIN)
-	$(CPP) $(INCLUDE) $(OBJ_BIN) $(LINK) -o $(BIN_DIR)/$(BINARY)
+	$(CPP) -L/mnt/d/ -lsentry $(INCLUDE) $(OBJ_BIN) $(LINK) -o $(BIN_DIR)/$(BINARY)
 
 debug:
 	$(MAKE) -f $(MAKEFILE_NAME) all DEBUG=true
