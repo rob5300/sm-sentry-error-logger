@@ -1,5 +1,5 @@
 #include "CTFErrorLoggerConfig.h"
-#include <string>
+#include <string.h>
 
 using namespace SourceMod;
 using namespace std;

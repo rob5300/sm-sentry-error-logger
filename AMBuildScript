@@ -149,7 +149,6 @@ class ExtensionConfig(object):
       '-pipe',
       '-fno-strict-aliasing',
       '-Wall',
-      '-Werror',
       '-Wno-unused',
       '-Wno-switch',
       '-Wno-array-bounds',
@@ -159,13 +158,17 @@ class ExtensionConfig(object):
     ]
     cxx.cxxflags += [
       '-std=c++14',
-      '-fno-exceptions',
       '-fno-threadsafe-statics',
       '-Wno-non-virtual-dtor',
       '-Wno-overloaded-virtual',
       '-fvisibility-inlines-hidden',
+	  '-fexceptions',
+	  '-fpermissive'
     ]
-    cxx.linkflags += ['-m32']
+    cxx.linkflags += [
+	'-m32',
+    '-L/mnt/d/ -lsentry'
+	]
 
     have_gcc = cxx.vendor == 'gcc'
     have_clang = cxx.vendor == 'clang'
