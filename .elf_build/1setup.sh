@@ -11,4 +11,4 @@ _ExtDirName=$(echo $_BasePathRoot | sed 's/ /_/g' | tr '[:upper:]' '[:lower:]') 
 # fi
 
 cd _BaseDirName
-./configure.py --hl2sdk-root ./vendor/source-sdk-2013 --mms-path ./vendor/metamod-source --sm-path ./vendor/sourcemod
+
