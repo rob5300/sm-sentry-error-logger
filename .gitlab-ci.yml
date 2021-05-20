@@ -6,7 +6,10 @@ stages:
 before_script:
      - apt-get update
      - apt-get install -y gzip zip python3    # Just in case these don't already exist.
-     - ln -s /usr/bin/python3 /usr/bin/python # Force the use of Py36 over Py27
+     - curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py && python3 get-pip.py && rm -f get-pip.py
+     - update-alternatives --install $HOME/.local/bin/python python /usr/bin/python2 10
+     - update-alternatives --install $HOME/.local/bin/python python /usr/bin/python3 20
+     - sudo update-alternatives --set python /usr/bin/python3 # Force the use of Python3 over Python2
 
 variables:
     GIT_SUBMODULE_STRATEGY: recursive         # Ensure we have everything before attempting to build
