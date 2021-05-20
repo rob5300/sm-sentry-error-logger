@@ -1,4 +1,5 @@
 .vs/*
+vendor/
 */.vs
 .ambuild2
 *.log
