@@ -24,6 +24,5 @@ fi
 mkdir ./build
 cd ./build
 
-echo "python ../configure.py --sdks tf2 --hl2sdk-root '$_BasePath/vendor' --mms-path '$_BasePath/vendor' --sm-path '$_BasePath/vendor/sourcemod'"
-python ../configure.py --sdks tf2 --hl2sdk-root "$_BasePath/vendor" --mms-path "$_BasePath/vendor" --sm-path "$_BasePath/vendor/sourcemod"
-
+echo "python3 ../configure.py --sdks tf2 --hl2sdk-root '$_BasePath/vendor' --mms-path '$_BasePath/vendor' --sm-path '$_BasePath/vendor/sourcemod'"
+python3 ../configure.py --sdks tf2 --hl2sdk-root "$_BasePath/vendor" --mms-path "$_BasePath/vendor" --sm-path "$_BasePath/vendor/sourcemod"

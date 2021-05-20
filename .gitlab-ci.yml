@@ -5,10 +5,11 @@ stages:
 
 before_script:
      - apt-get update
-     - apt-get install -y gzip zip      # Just in case these don't already exist.
+     - apt-get install -y gzip zip python3    # Just in case these don't already exist.
+     - ln -s /usr/bin/python3 /usr/bin/python # Force the use of Py36 over Py27
 
 variables:
-    GIT_SUBMODULE_STRATEGY: recursive   # Ensure we have everything before attempting to build
+    GIT_SUBMODULE_STRATEGY: recursive         # Ensure we have everything before attempting to build
 
 build-0deps:
     stage: build
