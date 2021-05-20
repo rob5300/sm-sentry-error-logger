@@ -1,0 +1,42 @@
+image: debian:buster
+
+stages:
+  - build
+
+before_script:
+     - apt-get update
+     - apt-get install -y gzip zip      # Just in case these don't already exist.
+
+variables:
+    GIT_SUBMODULE_STRATEGY: recursive   # Ensure we have everything before attempting to build
+
+cache: &global_cache
+    key: "${CI_COMMIT_REF_SLUG}-vendors"
+    paths:
+        - vendor/
+    policy: pull-push
+
+artifacts:
+    script:
+        - zip build/CTFErrorLogger.so.zip build/CTFErrorLogger.ext.2.tf2/CTFErrorLogger.ext.2.tf2.so
+        - gzip -9kc build/CTFErrorLogger.ext.2.tf2/CTFErrorLogger.ext.2.tf2.so > build/CTFErrorLogger.so.gz
+    paths:
+        - build/CTFErrorLogger.ext.2.tf2/CTFErrorLogger.ext.2.tf2.so
+        - build/CTFErrorLogger.zip
+        - build/CTFErrorLogger.tar.gz
+
+build-0deps:
+    stage: build
+    script:
+        - chmod -Rv u+x .elf_build/*
+        - .elf_build/0deps.sh
+
+build-1setup:
+    stage: build
+    script:
+        - .elf_build/1setup.sh
+
+build-2build:
+    stage: build
+    script:
+        - .elf_build/2build.sh
