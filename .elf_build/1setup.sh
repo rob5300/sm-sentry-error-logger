@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/bin/bash
 
 _BasePath=$(git rev-parse --show-toplevel)
 _BaseDirName=$(git rev-parse --show-toplevel | grep -o --color=never '[A-Za-z_]*$')

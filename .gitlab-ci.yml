@@ -10,18 +10,16 @@ before_script:
 variables:
     GIT_SUBMODULE_STRATEGY: recursive   # Ensure we have everything before attempting to build
 
-cache: &global_cache
-    key: "${CI_COMMIT_REF_SLUG}-vendors"
-    paths:
-        - vendor/
-    policy: pull-push
-
-
 build-0deps:
     stage: build
     script:
         - chmod -Rv u+x .elf_build/*
         - .elf_build/0deps.sh
+    cache:
+        key: "${CI_COMMIT_REF_SLUG}-vendors"
+        paths:
+            - vendor/
+        policy: pull-push
 
 build-1setup:
     stage: build

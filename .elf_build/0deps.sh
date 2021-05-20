@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/bin/bash
 
 # TODO(Johnny): Prompt if either: (1) OS is not linux. (2) aptitude is not installed. Abort if user declines to continue.
 
