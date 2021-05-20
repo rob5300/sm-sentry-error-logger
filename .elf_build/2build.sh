@@ -1,5 +1,6 @@
 #!/usr/bin/bash
-
-mkdir ./build
+echo ./build
 cd ./build
-python ../configure.py
+
+echo ambuild
+ambuild

@@ -11,8 +11,8 @@
     url = https://github.com/alliedmodders/ambuild.git
 [submodule "vendor/hl2sdk-tf2"]
 	path = vendor/hl2sdk-tf2
-	url = https://github.com/alliedmodders/hl2sdk
+	url = https://github.com/alliedmodders/hl2sdk.git
     branch= tf2
 [submodule "vendor/hl2sdk-proxy-repo"]
 	path = vendor/hl2sdk-proxy-repo
-	url = https://github.com/alliedmodders/hl2sdk
+	url = https://github.com/alliedmodders/hl2sdk.git

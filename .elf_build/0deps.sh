@@ -17,8 +17,8 @@ git pull 2> /dev/null
 git submodule update --init --recursive
 
 cd ./vendor
-
 ln -sr ./sourcemod/tools/checkout-deps.sh ./checkout-deps.sh
 chmod u+x ./checkout-deps.sh
+
 ./checkout-deps.sh -s tf2
 rm checkout-deps.sh
