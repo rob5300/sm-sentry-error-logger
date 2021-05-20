@@ -4,7 +4,6 @@
 #include <smsdk_ext.h>
 #include <string>
 #include <vector>
-#define SENTRY_BUILD_STATIC 1
 #include <sentry.h>
 #include "sp_vm_api.h"
 #include "SPSentryFrame.h"

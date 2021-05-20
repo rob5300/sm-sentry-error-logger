@@ -28,12 +28,11 @@
  *
  * Version: $Id$
  */
-#define SENTRY_BUILD_STATIC 1
 #include "extension.h"
 #include <string>
 #include <DebugListener.h>
-#include <sentry.h>
 #include <IPluginSys.h>
+#include "sentry.h"
 #include "CTFErrorLoggerConfig.h"
 
 using namespace SourceMod;

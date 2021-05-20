@@ -167,7 +167,8 @@ class ExtensionConfig(object):
     ]
     cxx.linkflags += [
 	'-m32',
-    '-L/mnt/d/ -lsentry'
+    '-L. -lsentry',
+    '-Wl,-rpath=/home/container/tf/addons/sourcemod/extensions'
 	]
 
     have_gcc = cxx.vendor == 'gcc'
