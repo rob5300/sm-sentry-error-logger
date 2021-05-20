@@ -16,14 +16,6 @@ cache: &global_cache
         - vendor/
     policy: pull-push
 
-artifacts:
-    script:
-        - zip build/CTFErrorLogger.so.zip build/CTFErrorLogger.ext.2.tf2/CTFErrorLogger.ext.2.tf2.so
-        - gzip -9kc build/CTFErrorLogger.ext.2.tf2/CTFErrorLogger.ext.2.tf2.so > build/CTFErrorLogger.so.gz
-    paths:
-        - build/CTFErrorLogger.ext.2.tf2/CTFErrorLogger.ext.2.tf2.so
-        - build/CTFErrorLogger.zip
-        - build/CTFErrorLogger.tar.gz
 
 build-0deps:
     stage: build
@@ -40,3 +32,10 @@ build-2build:
     stage: build
     script:
         - .elf_build/2build.sh
+        - zip build/CTFErrorLogger.so.zip build/CTFErrorLogger.ext.2.tf2/CTFErrorLogger.ext.2.tf2.so
+        - gzip -9kc build/CTFErrorLogger.ext.2.tf2/CTFErrorLogger.ext.2.tf2.so > build/CTFErrorLogger.so.gz
+    artifacts:
+        paths:
+            - build/CTFErrorLogger.ext.2.tf2/CTFErrorLogger.ext.2.tf2.so
+            - build/CTFErrorLogger.zip
+            - build/CTFErrorLogger.tar.gz
