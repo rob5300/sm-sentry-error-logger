@@ -15,3 +15,10 @@ sudo apt-get install -y ia32-libs lib32z1 lib32z1-dev libc6-dev-i386 libc6-i386 
 
 git pull 2> /dev/null
 git submodule update --init --recursive
+
+cd ./vendor
+
+ln -sr ./sourcemod/tools/checkout-deps.sh ./checkout-deps.sh
+chmod u+x ./checkout-deps.sh
+./checkout-deps.sh -s tf2
+rm checkout-deps.sh
