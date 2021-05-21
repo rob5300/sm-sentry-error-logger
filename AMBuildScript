@@ -167,8 +167,9 @@ class ExtensionConfig(object):
     ]
     cxx.linkflags += [
 	'-m32',
-    '-L. -lsentry',
-    '-Wl,-rpath=/home/container/tf/addons/sourcemod/extensions'
+	'/mnt/d/VSProjects/SOURCEMOD/sourcemod/public/ctf_error_logger_ext/sentry.a',
+	'-L/usr/lib/i386-linux-gnu/',
+	'-lcurl'
 	]
 
     have_gcc = cxx.vendor == 'gcc'

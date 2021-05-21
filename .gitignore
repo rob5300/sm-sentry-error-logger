@@ -5,3 +5,4 @@ build/
 .ambuild2
 *.log
 *.obj
+obj-linux-x86_64/
