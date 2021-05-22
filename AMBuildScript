@@ -167,7 +167,7 @@ class ExtensionConfig(object):
     ]
     cxx.linkflags += [
 	'-m32',
-	'/mnt/d/VSProjects/SOURCEMOD/sourcemod/public/ctf_error_logger_ext/sentry.a',
+	'./../../sentry.a',
 	'-L/usr/lib/i386-linux-gnu/',
 	'-lcurl'
 	]
