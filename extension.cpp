@@ -35,6 +35,8 @@
 #include "sentry.h"
 #include "CTFErrorLoggerConfig.h"
 
+#define LINUX
+
 using namespace SourceMod;
 using namespace std;
 
@@ -64,17 +66,23 @@ bool CTFErrorLogger::SDK_OnLoad(char* error, size_t maxlength, bool late)
         //Load the config and continue if this was successful.
         config = new CTFErrorLoggerConfig();
         string path = string(smutils->GetSourceModPath());
+#ifdef LINUX
+        path += "/configs/ctferrorlogger.cfg";
+#else
         path += "\\configs\\ctferrorlogger.cfg";
+#endif
         auto errorCode = textParsers->ParseFile_SMC(path.c_str(), config, NULL);
         if (!errorCode == SMCError::SMCError_Okay)
         {
             string errorMessage = string ("Failed to parse config file, error was: ") + to_string(static_cast<int>(errorCode));
             Print (errorMessage.c_str());
+            Print ((string ("Attempted Path was: ") + path).c_str());
             return false;
         }
         else
         {
-            Print ("Config Loaded!");
+            string successMessage = "Config Loaded! Server Name: [" + *config->server_name + "]";
+            Print (successMessage.c_str());
         }
 
         //Setup sentry
