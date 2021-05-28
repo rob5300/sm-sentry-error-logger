@@ -1182,6 +1182,10 @@
     <ClInclude Include="..\..\smsdk_ext.h" />
     <ClInclude Include="..\SPSentryFrame.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\sp\ctferrorlogger.inc" />
+    <None Include="..\sp\ctferrorlogger.sp" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

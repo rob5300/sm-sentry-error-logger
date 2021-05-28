@@ -32,10 +32,11 @@
 #include <string>
 #include <DebugListener.h>
 #include <IPluginSys.h>
+#ifdef WIN
+#define SENTRY_BUILD_STATIC
+#endif
 #include "sentry.h"
 #include "CTFErrorLoggerConfig.h"
-
-#define LINUX
 
 using namespace SourceMod;
 using namespace std;
@@ -66,10 +67,10 @@ bool CTFErrorLogger::SDK_OnLoad(char* error, size_t maxlength, bool late)
         //Load the config and continue if this was successful.
         config = new CTFErrorLoggerConfig();
         string path = string(smutils->GetSourceModPath());
-#ifdef LINUX
-        path += "/configs/ctferrorlogger.cfg";
-#else
+#ifdef WIN
         path += "\\configs\\ctferrorlogger.cfg";
+#else
+        path += "/configs/ctferrorlogger.cfg";
 #endif
         auto errorCode = textParsers->ParseFile_SMC(path.c_str(), config, NULL);
         if (!errorCode == SMCError::SMCError_Okay)
@@ -107,7 +108,7 @@ bool CTFErrorLogger::SDK_OnLoad(char* error, size_t maxlength, bool late)
 
             Print ("Added Debug Listener");
         }
-
+        
         return true;
     }
     catch (const exception &e)
@@ -131,4 +132,26 @@ void CTFErrorLogger::SDK_OnUnload()
 	{
 		Print(strcat("Things may break, Failed to fully unload due to: ", e.what()));
 	}
+}
+
+//Natives
+cell_t sm_CTFLogError (IPluginContext *pContext, const cell_t *params)
+{
+    auto pluginFileName = pContext->GetRuntime ()->GetFilename ();
+    char *str;
+    pContext->LocalToString (params [1], &str);
+    auto baseMessage = debugListener.GetBaseMessage (pluginFileName, str);
+    sentry_capture_event (baseMessage);
+
+    return 1;
+}
+
+const sp_nativeinfo_t NativeFunctions [] = {
+    {"CTFLogError", &sm_CTFLogError},
+    {NULL, NULL},
+};
+
+void CTFErrorLogger::SDK_OnAllLoaded ()
+{
+    sharesys->AddNatives (myself, NativeFunctions);
 }

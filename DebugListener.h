@@ -4,7 +4,10 @@
 #include <smsdk_ext.h>
 #include <string>
 #include <vector>
-#include <sentry.h>
+#ifdef WIN
+#define SENTRY_BUILD_STATIC
+#endif
+#include "sentry.h"
 #include "sp_vm_api.h"
 #include "SPSentryFrame.h"
 #include "CTFErrorLoggerConfig.h"
@@ -19,9 +22,10 @@ public:
 	void OnDebugSpew(const char* msg, ...) override;
 	void ReportError(const SourcePawn::IErrorReport &report, SourcePawn::IFrameIterator& iter) override;
 	void OnContextExecuteError(SourcePawn::IPluginContext* ctx, SourcePawn::IContextTrace* error) override;
+    sentry_value_t DebugListener::GetBaseMessage (const char *blame, const char *message);
 
 private:
 	IPluginManager* pluginsys;
 	std::vector<SPSentryFrame> DebugListener::GetStackTrace(IFrameIterator &iter);
-    sentry_value_t DebugListener::GetBaseMessage (const char* blame, const char* message);
+    
 };

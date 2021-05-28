@@ -208,6 +208,7 @@ class ExtensionConfig(object):
       '_CRT_SECURE_NO_WARNINGS',
       '_CRT_NONSTDC_NO_DEPRECATE',
       '_ITERATOR_DEBUG_LEVEL=0',
+	  'WIN'
     ]
     cxx.cflags += [
       '/W3',
@@ -231,7 +232,7 @@ class ExtensionConfig(object):
       'uuid.lib',
       'odbc32.lib',
       'odbccp32.lib',
-      'D:\VS Projects\SOURCEMOD\sourcemod\public\ctf_error_logger_ext\sentry.lib',
+      'D:\VSProjects\SOURCEMOD\sourcemod\public\ctf_error_logger_ext\sentry.lib',
       'winhttp.lib',
       'dbghelp.lib',
       'version.lib'

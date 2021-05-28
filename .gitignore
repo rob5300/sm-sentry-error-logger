@@ -6,3 +6,4 @@ build/
 *.log
 *.obj
 obj-linux-x86_64/
+obj-windows-AMD64/

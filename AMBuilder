@@ -10,6 +10,10 @@ sourceFiles = [
   'CTFErrorLoggerConfig.cpp'
 ]
 
+# Add only for windows
+if os.name == "nt":
+	sourceFiles.append('sentry.h')
+
 ###############
 # Make sure to edit PackageScript, which copies your files to their appropriate locations
 # Simple extensions do not need to modify past this point.

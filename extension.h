@@ -47,6 +47,8 @@
 class CTFErrorLogger : public SDKExtension
 {
 public:
+	//cell_t CTFErrorLogger::sm_LogError (IPluginContext *pContext, const cell_t *params);
+
 	void CTFErrorLogger::Print(const char* toPrint);
 
 	/**
@@ -68,7 +70,7 @@ public:
 	 * @brief This is called once all known extensions have been loaded.
 	 * Note: It is is a good idea to add natives here, if any are provided.
 	 */
-	//virtual void SDK_OnAllLoaded();
+	virtual void SDK_OnAllLoaded();
 
 	/**
 	 * @brief Called when the pause state is changed.
