@@ -28,7 +28,7 @@ void DebugListener::ReportError(const IErrorReport& report, IFrameIterator& iter
 		return;
 
 	onError(report.Message());
-
+    iter.Reset ();
 	const char* blame = nullptr;
 	try{
 		//Get plugin name as sm does.
@@ -39,33 +39,35 @@ void DebugListener::ReportError(const IErrorReport& report, IFrameIterator& iter
 		else
 		{
 			// Find the nearest plugin to blame.
-			for (; !iter.Done(); iter.Next())
-			{
-				if (iter.IsScriptedFrame())
-				{
-					IPlugin* plugin = pluginsys->FindPluginByContext(iter.Context()->GetContext());
-					if (plugin)
-					{
-						blame = plugin->GetFilename();
-					}
-					else
-					{
-						blame = iter.Context()->GetRuntime()->GetFilename();
-					}
-					break;
-				}
-			}
+            for (; !iter.Done (); iter.Next ())
+            {
+                if (iter.IsScriptedFrame ())
+                {
+                    const char* filePath = iter.FilePath ();
+                    if(filePath != nullptr) printf (filePath); 
+                    IPlugin *plugin = plsys->FindPluginByContext (iter.Context ()->GetContext ());
+                    if (plugin != nullptr)
+                    {
+                        blame = plugin->GetPublicInfo()->name;
+                    }
+                    else
+                    {
+                        blame = iter.Context ()->GetRuntime ()->GetFilename ();
+                    }
+                    break;
+                }
+            }
 		}
 		iter.Reset();
 
 		if (blame == nullptr)
 		{
-            blame = "unknown";
+            blame = "unknown_module";
 		}
 	}
 	catch (std::exception e)
 	{
-		blame = "unknown";
+		blame = "unknown_module";
 	}
 	
 	sentry_value_t event = GetBaseMessage (blame, report.Message ());
@@ -81,9 +83,11 @@ void DebugListener::ReportError(const IErrorReport& report, IFrameIterator& iter
 	for (SPSentryFrame& trace : stacktraceList)
 	{
 		sentry_value_t traceObject = sentry_value_new_object();
-		sentry_setstrvalue(traceObject, "function", trace.function)
-		sentry_setstrvalue(traceObject, "filename", trace.filename)
+		sentry_setstrvalue(traceObject, "function", trace.function.c_str())
+		//sentry_setstrvalue(traceObject, "filename", trace.filename.c_str())
+		sentry_setstrvalue(traceObject, "abs_path", trace.filename.c_str())
 		sentry_setstrvalue(traceObject, "module", blame)
+		sentry_setstrvalue(traceObject, "package", blame)
 		sentry_setintvalue(traceObject, "lineno", trace.lineno)
 		sentry_value_append(frames, traceObject);
 	}
@@ -108,29 +112,32 @@ vector<SPSentryFrame> DebugListener::GetStackTrace(IFrameIterator &iter)
 		for (int index = 0; !iter.Done(); iter.Next(), index++)
 		{
 			SPSentryFrame frame;
+            string functionName = string ("unknownfunc");
 			const char* fn = iter.FunctionName();
-			if (!fn)
+			if (fn)
 			{
-				fn = "<unknown function>";
+				functionName = string(fn);
 			}
 			if (iter.IsNativeFrame())
 			{
 				frame.lineno = 0;
-				frame.filename = "<native>";
-				frame.function = fn;
+				frame.filename = string("<native>");
+                frame.function = string(fn);
 				trace.push_back(frame);
 				continue;
 			}
 			if (iter.IsScriptedFrame())
 			{
-				const char* file = iter.FilePath();
-				if (!file)
+                const char *fileNameSrc = iter.FilePath ();
+                string file = string ("<unknown file>");
+                if (fileNameSrc != nullptr)
 				{
-					file = "<unknown>";
+                    file = string (fileNameSrc);
 				}
 				frame.lineno = iter.LineNumber();
 				frame.filename = file;
-				frame.function = fn;
+				string functionName = string (fn) + string("()");
+				frame.function = functionName;
 
 				trace.push_back(frame);
 			}

@@ -5,8 +5,8 @@
 class SPSentryFrame
 {
 public:
-	const char* filename;
+	std::string filename;
 	int32_t lineno;
-	const char* function;
+	std::string function;
 };
 #endif

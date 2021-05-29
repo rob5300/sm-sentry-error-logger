@@ -25,7 +25,6 @@ public:
     sentry_value_t DebugListener::GetBaseMessage (const char *blame, const char *message);
 
 private:
-	IPluginManager* pluginsys;
 	std::vector<SPSentryFrame> DebugListener::GetStackTrace(IFrameIterator &iter);
     
 };

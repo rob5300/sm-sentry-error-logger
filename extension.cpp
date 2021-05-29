@@ -137,7 +137,16 @@ void CTFErrorLogger::SDK_OnUnload()
 //Natives
 cell_t sm_CTFLogError (IPluginContext *pContext, const cell_t *params)
 {
-    auto pluginFileName = pContext->GetRuntime ()->GetFilename ();
+    auto plugin = plsys->FindPluginByContext (pContext->GetContext());
+    char* pluginFileName;
+    if (plugin != nullptr)
+    {
+        strcpy(pluginFileName, plugin->GetPublicInfo()->name);
+    }
+    else
+    {
+        pluginFileName = "unknown_plugin";
+    }
     char *str;
     pContext->LocalToString (params [1], &str);
     auto baseMessage = debugListener.GetBaseMessage (pluginFileName, str);
