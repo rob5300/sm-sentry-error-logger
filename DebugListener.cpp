@@ -8,13 +8,16 @@ using namespace std;
 
 void DebugListener::OnDebugSpew (const char *msg, ...)
 {
-	if (oldListener)
-	{
-		oldListener->OnDebugSpew(msg);
+    if (msg != nullptr)
+    {
+		if (oldListener)
+		{
+			oldListener->OnDebugSpew(msg);
+		}
+		if(onError) onError();
+		const sentry_value_t event = GetBaseMessage ("Debug", msg);
+		sentry_capture_event(event);
 	}
-	onError(msg);
-    const sentry_value_t event = GetBaseMessage ("Debug", msg);
-	sentry_capture_event(event);
 }
 
 void DebugListener::ReportError(const IErrorReport& report, IFrameIterator& iter)
@@ -27,7 +30,7 @@ void DebugListener::ReportError(const IErrorReport& report, IFrameIterator& iter
 	if (report.Code() == SP_ERROR_NOT_RUNNABLE)
 		return;
 
-	onError(report.Message());
+	if(onError) onError();
     iter.Reset ();
 	const char* blame = nullptr;
 	try{
@@ -79,29 +82,30 @@ void DebugListener::ReportError(const IErrorReport& report, IFrameIterator& iter
 
 	//Construct the stack trace manually using the event data.
 	auto stacktraceList = DebugListener::GetStackTrace(iter);
-	sentry_value_t frames = sentry_value_new_list();
-	for (SPSentryFrame& trace : stacktraceList)
-	{
-		sentry_value_t traceObject = sentry_value_new_object();
-		sentry_setstrvalue(traceObject, "function", trace.function.c_str())
-		//sentry_setstrvalue(traceObject, "filename", trace.filename.c_str())
-		sentry_setstrvalue(traceObject, "abs_path", trace.filename.c_str())
-		sentry_setstrvalue(traceObject, "module", blame)
-		sentry_setstrvalue(traceObject, "package", blame)
-		sentry_setintvalue(traceObject, "lineno", trace.lineno)
-		sentry_value_append(frames, traceObject);
+    if (stacktraceList.size() > 0)
+    {
+		sentry_value_t frames = sentry_value_new_list();
+		for (SPSentryFrame& trace : stacktraceList)
+		{
+			sentry_value_t traceObject = sentry_value_new_object();
+			sentry_setstrvalue(traceObject, "function", trace.function.c_str())
+			//sentry_setstrvalue(traceObject, "filename", trace.filename.c_str())
+			sentry_setstrvalue(traceObject, "abs_path", trace.filename.c_str())
+			sentry_setstrvalue(traceObject, "module", blame)
+			sentry_setstrvalue(traceObject, "package", blame)
+			sentry_setintvalue(traceObject, "lineno", trace.lineno)
+			sentry_value_append(frames, traceObject);
+		}
+		sentry_value_t stacktrace = sentry_value_new_object();
+		sentry_value_set_by_key(stacktrace, "frames", frames);
+		sentry_value_set_by_key(error, "stacktrace", stacktrace);
+		sentry_value_set_by_key(event, "exception", error);
 	}
-	sentry_value_t stacktrace = sentry_value_new_object();
-	sentry_value_set_by_key(stacktrace, "frames", frames);
-	sentry_value_set_by_key(error, "stacktrace", stacktrace);
-	sentry_value_set_by_key(event, "exception", error);
 	
 	sentry_capture_event(event);
 }
 
-/// <summary>
-/// Get Frame information for sentry from the error. Modified version of SourceMod DebugReporter::GetStackTrace
-/// </summary>
+
 vector<SPSentryFrame> DebugListener::GetStackTrace(IFrameIterator &iter)
 {
 	vector<SPSentryFrame> trace;
@@ -147,12 +151,6 @@ vector<SPSentryFrame> DebugListener::GetStackTrace(IFrameIterator &iter)
 	return trace;
 }
 
-/// <summary>
-/// Construct a base message sentry event and add common message data.
-/// </summary>
-/// <param name="blame">Error source</param>
-/// <param name="message">Main error message</param>
-/// <returns>New Sentry event object</returns>
 sentry_value_t DebugListener::GetBaseMessage (const char *blame, const char *message)
 {
 	sentry_value_t event = sentry_value_new_message_event (SENTRY_LEVEL_ERROR, blame, message);

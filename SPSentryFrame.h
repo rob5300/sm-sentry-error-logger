@@ -2,6 +2,9 @@
 #define SPSENTRYFRAME
 #include <cstdint>
 
+/// <summary>
+/// Holds information about a single frame, or function call in an error stack.
+/// </summary>
 class SPSentryFrame
 {
 public:

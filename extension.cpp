@@ -2,33 +2,11 @@
  * vim: set ts=4 :
  * =============================================================================
  * SourceMod CTFErrorLogger Extension
- * Copyright (C) 2004-2008 AlliedModders LLC.  All rights reserved.
+ * Creators.TF Robert Straub 2021
  * =============================================================================
- *
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU General Public License, version 3.0, as published by the
- * Free Software Foundation.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
- * details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * As a special exception, AlliedModders LLC gives you permission to link the
- * code of this program (as well as its derivative works) to "Half-Life 2," the
- * "Source Engine," the "SourcePawn JIT," and any Game MODs that run on software
- * by the Valve Corporation.  You must obey the GNU General Public License in
- * all respects for all other code used.  Additionally, AlliedModders LLC grants
- * this exception to all derivative works.  AlliedModders LLC defines further
- * exceptions, found in LICENSE.txt (as of this writing, version JULY-31-2007),
- * or <http://www.sourcemod.net/license.php>.
- *
- * Version: $Id$
  */
 #include "extension.h"
+#include <memory>
 #include <string>
 #include <DebugListener.h>
 #include <IPluginSys.h>
@@ -43,14 +21,16 @@ using namespace std;
 
 /**
  * @file extension.cpp
- * @brief Implement extension code here.
+ * @brief Main extension object for the Error Logger
  */
 
-CTFErrorLogger g_Sample;		/**< Global singleton for extension's main interface */
+//Sourcemod objects/pointers.
+CTFErrorLogger g_Sample;
 SMEXT_LINK(&g_Sample);
-DebugListener debugListener;
 ITextParsers* textParsers;
-CTFErrorLoggerConfig* config;
+
+DebugListener debugListener;
+shared_ptr<CTFErrorLoggerConfig> config;
 
 void CTFErrorLogger::Print(const char* toPrint)
 {
@@ -62,17 +42,18 @@ bool CTFErrorLogger::SDK_OnLoad(char* error, size_t maxlength, bool late)
 {
     try
     {
+        //Get the souremod text parser. Ignore vs errors its correct.
         SM_GET_IFACE (TEXTPARSERS, textParsers);
 
         //Load the config and continue if this was successful.
-        config = new CTFErrorLoggerConfig();
+        config = make_shared<CTFErrorLoggerConfig> ();
         string path = string(smutils->GetSourceModPath());
 #ifdef WIN
         path += "\\configs\\ctferrorlogger.cfg";
 #else
         path += "/configs/ctferrorlogger.cfg";
 #endif
-        auto errorCode = textParsers->ParseFile_SMC(path.c_str(), config, NULL);
+        auto errorCode = textParsers->ParseFile_SMC(path.c_str(), config.get(), NULL);
         if (!errorCode == SMCError::SMCError_Okay)
         {
             string errorMessage = string ("Failed to parse config file, error was: ") + to_string(static_cast<int>(errorCode));
@@ -98,7 +79,7 @@ bool CTFErrorLogger::SDK_OnLoad(char* error, size_t maxlength, bool late)
         if (engine != nullptr)
         {
             debugListener.config = config;
-            debugListener.onError = [this] (const char *message) {
+            debugListener.onError = [this] () {
                 Print ("Error was logged");
             };
             auto oldListener = engine->SetDebugListener (&debugListener);
@@ -122,7 +103,6 @@ void CTFErrorLogger::SDK_OnUnload()
 {
 	try
 	{
-        delete config;
 		auto engine = g_pSM->GetScriptingEngine();
 		engine->SetDebugListener(debugListener.oldListener);
 		sentry_close();
@@ -137,11 +117,11 @@ void CTFErrorLogger::SDK_OnUnload()
 //Natives
 cell_t sm_CTFLogError (IPluginContext *pContext, const cell_t *params)
 {
-    auto plugin = plsys->FindPluginByContext (pContext->GetContext());
-    char* pluginFileName;
+    IPlugin* plugin = plsys->FindPluginByContext (pContext->GetContext());
+    string pluginFileName;
     if (plugin != nullptr)
     {
-        strcpy(pluginFileName, plugin->GetPublicInfo()->name);
+        pluginFileName = plugin->GetPublicInfo()->name;
     }
     else
     {
@@ -149,9 +129,10 @@ cell_t sm_CTFLogError (IPluginContext *pContext, const cell_t *params)
     }
     char *str;
     pContext->LocalToString (params [1], &str);
-    auto baseMessage = debugListener.GetBaseMessage (pluginFileName, str);
+    auto baseMessage = debugListener.GetBaseMessage (pluginFileName.c_str(), str);
     sentry_capture_event (baseMessage);
-
+    string printMessage = string (SMEXT_CONF_NAME) + " captured a manual error: " + string (str);
+    printf (printMessage.c_str());
     return 1;
 }
 
