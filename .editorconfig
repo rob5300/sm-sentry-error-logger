@@ -1,0 +1,30 @@
+# .editorconfig for CTF SourceMod Sentry ErrorLogger
+#
+# This controls the whitespace, encoding, etc. for all supporting editors
+
+# Set as root .editorconfig
+root = true
+
+# All files
+[*]
+# Use unix newlines
+end_of_line = lf
+# Insert final newline
+# Done to make adding to end of a file easier
+insert_final_newline = true
+# Use spaces for tabs w/ 4 char width
+indent_style = space
+indent_size = 4
+tab_width = 4
+# Enforce UTF-8 Encoding
+charset = utf-8 
+
+# GitLab CI script
+[.gitlab-ci.yml]
+# Narrow indentation for yml
+#
+# YML heavily uses indentation in a way
+# where full width can make it harder to read
+indent_size = 2
+tab_width = 2
+
