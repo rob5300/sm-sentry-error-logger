@@ -110,6 +110,7 @@
     <ProjectGuid>{B3E797CF-4E77-4C9D-B8A8-7589B6902206}</ProjectGuid>
     <RootNamespace>sdk</RootNamespace>
     <Keyword>Win32Proj</Keyword>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release - Episode 1|Win32'" Label="Configuration">
@@ -482,6 +483,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
@@ -1168,19 +1170,21 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\CTFErrorLoggerConfig.cpp" />
-    <ClCompile Include="..\DebugListener.cpp" />
-    <ClCompile Include="..\extension.cpp" />
     <ClCompile Include="..\..\smsdk_ext.cpp" />
+    <ClCompile Include="..\src\CTFErrorLoggerConfig.cpp" />
+    <ClCompile Include="..\src\DebugListener.cpp" />
+    <ClCompile Include="..\src\extension.cpp" />
+    <ClCompile Include="..\src\SMErrorLogReader.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\CTFErrorLoggerConfig.h" />
-    <ClInclude Include="..\DebugListener.h" />
-    <ClInclude Include="..\extension.h" />
-    <ClInclude Include="..\sentry.h" />
+    <ClInclude Include="..\lib\sentry.h" />
     <ClInclude Include="..\smsdk_config.h" />
     <ClInclude Include="..\..\smsdk_ext.h" />
-    <ClInclude Include="..\SPSentryFrame.h" />
+    <ClInclude Include="..\src\CTFErrorLoggerConfig.h" />
+    <ClInclude Include="..\src\DebugListener.h" />
+    <ClInclude Include="..\src\extension.h" />
+    <ClInclude Include="..\src\SMErrorLogReader.h" />
+    <ClInclude Include="..\src\SPSentryFrame.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\sp\ctferrorlogger.inc" />

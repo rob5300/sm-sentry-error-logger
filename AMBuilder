@@ -5,14 +5,15 @@ projectName = 'CTFErrorLogger'
 
 # smsdk_ext.cpp will be automatically added later
 sourceFiles = [
-  'extension.cpp',
-  'DebugListener.cpp',
-  'CTFErrorLoggerConfig.cpp'
+  'src/extension.cpp',
+  'src/DebugListener.cpp',
+  'src/CTFErrorLoggerConfig.cpp',
+  'src/SMErrorLogReader.cpp'
 ]
 
 # Add only for windows
 if os.name == "nt":
-	sourceFiles.append('sentry.h')
+	sourceFiles.append('lib/sentry.h')
 
 ###############
 # Make sure to edit PackageScript, which copies your files to their appropriate locations

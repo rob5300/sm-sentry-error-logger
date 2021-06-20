@@ -211,12 +211,14 @@ class ExtensionConfig(object):
 	  'WIN'
     ]
     cxx.cflags += [
-      '/W3',
+      '/W3'
     ]
     cxx.cxxflags += [
       '/EHsc',
       '/GR-',
       '/TP',
+	  '/std:c++17',
+	  '/machine:X86'
     ]
     cxx.linkflags += [
       '/MACHINE:X86',
@@ -232,7 +234,7 @@ class ExtensionConfig(object):
       'uuid.lib',
       'odbc32.lib',
       'odbccp32.lib',
-      'D:\VSProjects\SOURCEMOD\sourcemod\public\ctf_error_logger_ext\sentry.lib',
+      'D:\VSProjects\SOURCEMOD\sourcemod\public\ctf_error_logger_ext\lib\sentry.lib',
       'winhttp.lib',
       'dbghelp.lib',
       'version.lib'
