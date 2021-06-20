@@ -42,10 +42,10 @@ void SMErrorLogReader::WatchErrorLog ()
         while (getline(errorLog, line)) {
             //Check if we have any of the date substrings
             string substr = line.substr(0, ERROR_DATETIME_LEN);
-            if (!ContainsIgnoredStrings(substr) && pastLogContents.count(substr) == 0)
+            string errorContents = line.substr(ERROR_DATETIME_LEN);
+            if (!ContainsIgnoredStrings(errorContents) && pastLogContents.count(substr) == 0)
             {
                 pastLogContents.insert(substr);
-                string errorContents = line.substr(ERROR_DATETIME_LEN);
                 printf((string("[SMErrorLogReader] New Error was found in the SM Error Log: '") + errorContents + string("'\n")).c_str());
                 EventReciever->OnSMErrorFound(errorContents);
             }
