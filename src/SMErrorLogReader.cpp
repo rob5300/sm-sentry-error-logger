@@ -46,11 +46,11 @@ void SMErrorLogReader::WatchErrorLog ()
             {
                 pastLogContents.insert(substr);
                 string errorContents = line.substr(ERROR_DATETIME_LEN);
-                printf((string("New Error was found in the SM Error Log: '") + errorContents + string("'\n")).c_str());
+                printf((string("[SMErrorLogReader] New Error was found in the SM Error Log: '") + errorContents + string("'\n")).c_str());
                 EventReciever->OnSMErrorFound(errorContents);
             }
         }
-        const string message = string("(SMErrorLogReader) Error Log '") + newestErrorLogPath.filename().generic_string() + string("' was checked for new errors. Next try in ") + to_string(waitTime) + string(" seconds\n");
+        const string message = string("[SMErrorLogReader] Error Log '") + newestErrorLogPath.filename().generic_string() + string("' was checked for new errors. Next try in ") + to_string(waitTime) + string(" seconds\n");
         printf(message.c_str());
         this_thread::sleep_for(chrono::seconds(waitTime));
     }
@@ -65,7 +65,7 @@ filesystem::path SMErrorLogReader::GetLatestErrorLogPath()
 {
     filesystem::path newestErrorLogPath;
     filesystem::file_time_type* lastModifyTime = nullptr;
-    for (const auto& entry : filesystem::directory_iterator(errorLogPath))
+    for (const auto &entry : filesystem::directory_iterator(errorLogPath))
     {
         if (entry.is_regular_file () && entry.path().filename().generic_string().find("error") != string::npos)
         {
@@ -81,12 +81,12 @@ filesystem::path SMErrorLogReader::GetLatestErrorLogPath()
 
 bool SMErrorLogReader::ContainsIgnoredStrings(std::string& str)
 {
-    for (auto ignore : ignoreStrings)
+    for (const auto &ignore : ignoreStrings)
     {
         if (str.find(ignore) != string::npos)
         {
-            return false;
+            return true;
         }
     }
-    return true;
+    return false;
 }
