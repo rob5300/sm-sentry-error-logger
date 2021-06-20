@@ -157,7 +157,7 @@ class ExtensionConfig(object):
       '-fvisibility=hidden',
     ]
     cxx.cxxflags += [
-      '-std=c++14',
+      '-std=c++17',
       '-fno-threadsafe-statics',
       '-Wno-non-virtual-dtor',
       '-Wno-overloaded-virtual',
@@ -167,9 +167,10 @@ class ExtensionConfig(object):
     ]
     cxx.linkflags += [
 	'-m32',
-	'./../../sentry.a',
+	'./../../lib/sentry.a',
 	'-L/usr/lib/i386-linux-gnu/',
-	'-lcurl'
+	'-lcurl',
+    '-lstdc++fs'
 	]
 
     have_gcc = cxx.vendor == 'gcc'
