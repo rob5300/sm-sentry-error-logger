@@ -47,11 +47,14 @@ void SMErrorLogReader::WatchErrorLog ()
             {
                 pastLogContents.insert(substr);
                 printf((string("[SMErrorLogReader] New Error was found in the SM Error Log: '") + errorContents + string("'\n")).c_str());
-                EventReciever->OnSMErrorFound(errorContents);
+                if(EventReciever != nullptr) EventReciever->OnSMErrorFound(errorContents);
             }
         }
-        const string message = string("[SMErrorLogReader] Error Log '") + newestErrorLogPath.filename().generic_string() + string("' was checked for new errors. Next try in ") + to_string(waitTime) + string(" seconds\n");
-        printf(message.c_str());
+        //const string message = string("[SMErrorLogReader] Error Log '") + newestErrorLogPath.filename().generic_string() + string("' was checked for new errors. Next try in ") + to_string(waitTime) + string(" seconds\n");
+        //printf(message.c_str());
+
+        if(!active) return;
+
         this_thread::sleep_for(chrono::seconds(waitTime));
     }
 }
@@ -59,6 +62,7 @@ void SMErrorLogReader::WatchErrorLog ()
 void SMErrorLogReader::Stop()
 {
     active = false;
+    thread->join();
 }
 
 filesystem::path SMErrorLogReader::GetLatestErrorLogPath()
