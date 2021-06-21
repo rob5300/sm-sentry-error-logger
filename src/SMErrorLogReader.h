@@ -4,13 +4,20 @@
 #include <memory>
 #include <unordered_set>
 #include <thread>
+#include <atomic>
 
+/// <summary>
+/// Can be notifified of a new SM Error Log Error
+/// </summary>
 class IErrorLogEventReciever
 {
 	public:
 		virtual void OnSMErrorFound (std::string& error) = 0;
 };
 
+/// <summary>
+/// Watches the latest SM Error Log to report new errors.
+/// </summary>
 class SMErrorLogReader
 {
 	public:
@@ -20,7 +27,7 @@ class SMErrorLogReader
 		void Stop();
 
 	private:
-		bool active;
+		std::atomic<bool> active;
 		int32_t waitTime;
 		std::string errorLogRegex;
 		std::string errorLogPath;
