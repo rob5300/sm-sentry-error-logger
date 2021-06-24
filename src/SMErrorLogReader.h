@@ -4,7 +4,8 @@
 #include <memory>
 #include <unordered_set>
 #include <thread>
-#include <atomic>
+#include <mutex>
+#include <condition_variable>
 
 /// <summary>
 /// Can be notifified of a new SM Error Log Error
@@ -27,12 +28,14 @@ class SMErrorLogReader
 		void Stop();
 
 	private:
-		std::atomic<bool> active;
+		bool active;
 		int32_t waitTime;
 		std::string errorLogRegex;
 		std::string errorLogPath;
 		std::unordered_set<std::string> pastLogContents;
 		std::unique_ptr<std::thread> thread;
+		std::mutex loopMutex;
+		std::condition_variable loopConditionVar;
 
 		void WatchErrorLog ();
 		std::filesystem::path GetLatestErrorLogPath();

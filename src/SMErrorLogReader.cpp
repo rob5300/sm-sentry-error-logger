@@ -50,19 +50,27 @@ void SMErrorLogReader::WatchErrorLog ()
                 if(EventReciever != nullptr) EventReciever->OnSMErrorFound(errorContents);
             }
         }
-        //const string message = string("[SMErrorLogReader] Error Log '") + newestErrorLogPath.filename().generic_string() + string("' was checked for new errors. Next try in ") + to_string(waitTime) + string(" seconds\n");
-        //printf(message.c_str());
+        const string message = string("[SMErrorLogReader] Error Log '") + newestErrorLogPath.filename().generic_string() + string("' was checked for new errors. Next try in ") + to_string(waitTime) + string(" seconds\n");
+        printf(message.c_str());
 
         if(!active) return;
 
-        this_thread::sleep_for(chrono::seconds(waitTime));
+        std::unique_lock<std::mutex> lk(loopMutex);
+        loopConditionVar.wait_for(lk, chrono::seconds(waitTime), [this]{return !active;});
+        lk.unlock();
+        loopConditionVar.notify_one();
     }
 }
 
 void SMErrorLogReader::Stop()
 {
+    printf("Attempting to stop WatchErrorLog thread...\n");
+    std::unique_lock<std::mutex> lk(loopMutex);
     active = false;
+    loopConditionVar.notify_one();
+    lk.unlock();
     thread->join();
+    printf("Stopped WatchErrorLog thread.\n");
 }
 
 filesystem::path SMErrorLogReader::GetLatestErrorLogPath()
