@@ -160,6 +160,15 @@ sentry_value_t DebugListener::GetBaseMessage (const char *blame, const char *mes
     sentry_value_t tags = sentry_value_new_object ();
     sentry_setstrvalue (tags, "server_id", config->server_id->c_str());
     sentry_setstrvalue (tags, "region", config->region->c_str());
+
+	//Add the servers current map as a tag.
+	string currentMap = "unknown_map";
+	if (gamehelpers != nullptr)
+	{
+		currentMap = gamehelpers->GetCurrentMap();
+	}
+	sentry_setstrvalue(tags, "map", currentMap.c_str());
+
     sentry_value_set_by_key (event, "tags", tags);
 	return event;
 }
