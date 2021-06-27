@@ -37,8 +37,17 @@ class SMErrorLogReader
 		std::mutex loopMutex;
 		std::condition_variable loopConditionVar;
 
+		/// <summary>
+		/// Loops on a new thread to find new errors in the source mod managed logs.
+		/// </summary>
 		void WatchErrorLog ();
+		/// <summary>
+		/// Return the path to the most recent error log file
+		/// </summary>
 		std::filesystem::path GetLatestErrorLogPath();
+		/// <summary>
+		/// Check if this string contains any of the 'ignored' strings.
+		/// </summary>
 		bool ContainsIgnoredStrings(std::string& str);
 };
 

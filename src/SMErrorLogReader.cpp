@@ -7,6 +7,7 @@ using namespace std;
 
 #define ERROR_DATETIME_LEN 25
 
+///Strings to ignore. Errors with these are ignored.
 string ignoreStrings[] = {
     "SourceMod error session started",
     "[SM]",
@@ -29,6 +30,7 @@ SMErrorLogReader::SMErrorLogReader (string &_errorLogPath, int32_t& _waitTime)
     }
 
     active = true;
+    //Start a new thread which will re check the error log for new errors.
     thread = make_unique<std::thread>([this](){WatchErrorLog();});
 }
 
@@ -40,12 +42,15 @@ void SMErrorLogReader::WatchErrorLog ()
         ifstream errorLog(newestErrorLogPath);
         string line;
         while (getline(errorLog, line)) {
-            //Check if we have any of the date substrings
-            string substr = line.substr(0, ERROR_DATETIME_LEN);
+            //Get the date+time component
+            string dateTimeSubStr = line.substr(0, ERROR_DATETIME_LEN);
+            //Get the error message component
             string errorContents = line.substr(ERROR_DATETIME_LEN);
-            if (!ContainsIgnoredStrings(errorContents) && pastLogContents.count(substr) == 0)
+
+            //Log this error if this date+time was not already seen, and if the error doesnt have the ignored strings in it.
+            if (!ContainsIgnoredStrings(errorContents) && pastLogContents.count(dateTimeSubStr) == 0)
             {
-                pastLogContents.insert(substr);
+                pastLogContents.insert(dateTimeSubStr);
                 printf((string("[SMErrorLogReader] New Error was found in the SM Error Log: '") + errorContents + string("'\n")).c_str());
                 if(EventReciever != nullptr) EventReciever->OnSMErrorFound(errorContents);
             }
@@ -55,6 +60,7 @@ void SMErrorLogReader::WatchErrorLog ()
 
         if(!active) return;
 
+        //Wait for the specified time to check the logs again.
         std::unique_lock<std::mutex> lk(loopMutex);
         loopConditionVar.wait_for(lk, chrono::seconds(waitTime), [this]{return !active;});
         lk.unlock();
@@ -64,6 +70,7 @@ void SMErrorLogReader::WatchErrorLog ()
 
 void SMErrorLogReader::Stop()
 {
+    //Trigger the condition variable to stop waiting early so we can join and stop the thread now.
     printf("Attempting to stop WatchErrorLog thread...\n");
     std::unique_lock<std::mutex> lk(loopMutex);
     active = false;
@@ -79,6 +86,7 @@ filesystem::path SMErrorLogReader::GetLatestErrorLogPath()
     filesystem::file_time_type* lastModifyTime = nullptr;
     for (const auto &entry : filesystem::directory_iterator(errorLogPath))
     {
+        //Make sure this is a file + the filename has 'error' in it.
         if (entry.is_regular_file () && entry.path().filename().generic_string().find("error") != string::npos)
         {
             if (lastModifyTime == nullptr || entry.last_write_time() > *lastModifyTime)
