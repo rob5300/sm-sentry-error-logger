@@ -7,6 +7,7 @@
  */
 #include <memory>
 #include <string>
+#include <filesystem>
 #include <IPluginSys.h>
 #ifdef WIN
 #define SENTRY_BUILD_STATIC
@@ -47,14 +48,21 @@ bool CTFErrorLogger::SDK_OnLoad(char* error, size_t maxlength, bool late)
         //Get the souremod text parser. Ignore vs errors its correct.
         SM_GET_IFACE (TEXTPARSERS, textParsers);
 
-        //Load the config and continue if this was successful.
-        config = make_shared<CTFErrorLoggerConfig> ();
         string path = string(smutils->GetSourceModPath());
 #ifdef WIN
         path += "\\configs\\ctferrorlogger.cfg";
 #else
         path += "/configs/ctferrorlogger.cfg";
 #endif
+
+        if (!filesystem::exists(path))
+        {
+            Print("Config was not present, will not load.");
+            return false;
+        }
+
+        //Load the config and continue if this was successful.
+        config = make_shared<CTFErrorLoggerConfig> ();
         auto errorCode = textParsers->ParseFile_SMC(path.c_str(), config.get(), NULL);
         if (!errorCode == SMCError::SMCError_Okay)
         {
@@ -126,9 +134,9 @@ void CTFErrorLogger::SDK_OnUnload()
 {
 	try
 	{
-        errorLogWatcher->Stop();
+        if(errorLogWatcher != nullptr) errorLogWatcher->Stop();
 		auto engine = g_pSM->GetScriptingEngine();
-		engine->SetDebugListener(debugListener.oldListener);
+		if(debugListener.oldListener != nullptr) engine->SetDebugListener(debugListener.oldListener);
 		sentry_close();
 		Print("Unloaded extension and restored old Debug Listener");
 	}
