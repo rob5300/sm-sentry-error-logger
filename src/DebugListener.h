@@ -13,6 +13,7 @@
 #include "SPSentryFrame.h"
 #include "CTFErrorLoggerConfig.h"
 #include "SMErrorLogReader.h"
+#include <IGameHelpers.h>
 
 /// <summary>
 /// Custom debug listener to forward source pawn errors to the sentry api.
