@@ -11,11 +11,12 @@
 class CTFErrorLoggerConfig : public SourceMod::ITextListener_SMC
 {
 public:
-    std::unique_ptr<std::string> sentry_dsn_url;
-    std::unique_ptr<std::string> server_name;
-    std::unique_ptr<std::string> server_id;
-    std::unique_ptr<std::string> environment;
-    std::unique_ptr<std::string> region;
+    std::string sentry_dsn_url;
+    std::string server_name;
+    std::string server_id;
+    std::string environment;
+    std::string region;
+    int32_t logReaderWaitTime;
 
     /// <summary>
     /// Method to recieve parsed key value pairs.

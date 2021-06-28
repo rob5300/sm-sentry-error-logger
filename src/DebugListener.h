@@ -8,16 +8,17 @@
 #ifdef WIN
 #define SENTRY_BUILD_STATIC
 #endif
-#include "sentry.h"
+#include "lib/sentry.h"
 #include "sp_vm_api.h"
 #include "SPSentryFrame.h"
 #include "CTFErrorLoggerConfig.h"
+#include "SMErrorLogReader.h"
 #include <IGameHelpers.h>
 
 /// <summary>
 /// Custom debug listener to forward source pawn errors to the sentry api.
 /// </summary>
-class DebugListener : public SourcePawn::IDebugListener
+class DebugListener : public SourcePawn::IDebugListener, public IErrorLogEventReciever
 {
 public:
 	//Generic 
@@ -48,6 +49,12 @@ public:
 	/// <param name="message">Main error message</param>
 	/// <returns>New Sentry event object</returns>
     sentry_value_t DebugListener::GetBaseMessage (const char *blame, const char *message);
+
+	/// <summary>
+	/// Get notified when a new Log File error is found.
+	/// </summary>
+	/// <param name="error">Raw error string, with date removed.</param>
+	void OnSMErrorFound (std::string& error);
 
 private:
 	/// <summary>

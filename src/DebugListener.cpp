@@ -154,12 +154,12 @@ vector<SPSentryFrame> DebugListener::GetStackTrace(IFrameIterator &iter)
 sentry_value_t DebugListener::GetBaseMessage (const char *blame, const char *message)
 {
 	sentry_value_t event = sentry_value_new_message_event (SENTRY_LEVEL_ERROR, blame, message);
-    sentry_setstrvalue (event, "server_name", config->server_name->c_str ());
-    sentry_setstrvalue (event, "environment", config->environment->c_str ());
+    sentry_setstrvalue (event, "server_name", config->server_name.c_str ());
+    sentry_setstrvalue (event, "environment", config->environment.c_str ());
 
     sentry_value_t tags = sentry_value_new_object ();
-    sentry_setstrvalue (tags, "server_id", config->server_id->c_str());
-    sentry_setstrvalue (tags, "region", config->region->c_str());
+    sentry_setstrvalue (tags, "server_id", config->server_id.c_str());
+    sentry_setstrvalue (tags, "region", config->region.c_str());
 
 	//Add the servers current map as a tag.
 	string currentMap = "unknown_map";
@@ -171,6 +171,12 @@ sentry_value_t DebugListener::GetBaseMessage (const char *blame, const char *mes
 
     sentry_value_set_by_key (event, "tags", tags);
 	return event;
+}
+
+void DebugListener::OnSMErrorFound (std::string &error)
+{
+	auto event = GetBaseMessage("SMErrorLog", error.c_str());
+	sentry_capture_event(event);
 }
 
 void DebugListener::OnContextExecuteError(IPluginContext* ctx, IContextTrace* error)

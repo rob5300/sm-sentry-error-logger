@@ -10,23 +10,27 @@ SMCResult CTFErrorLoggerConfig::ReadSMC_KeyValue (const SMCStates *states, const
     {
         if (strcmp(key, "sentry_dsn_url") == 0)
         {
-            sentry_dsn_url = make_unique<string>(value);
+            sentry_dsn_url = string(value);
         }
         else if (strcmp(key, "server_name") == 0)
         {
-            server_name = make_unique<string>(value);
+            server_name = string(value);
         }
         else if (strcmp(key, "server_id") == 0)
         {
-            server_id = make_unique<string>(value);
+            server_id = string(value);
         }
         else if (strcmp(key, "environment") == 0)
         {
-            environment = make_unique<string>(value);
+            environment = string(value);
         }
         else if (strcmp (key, "region") == 0)
         {
-            region = make_unique<string>(value);
+            region = string(value);
+        }
+        else if (strcmp(key, "logReaderWaitTime") == 0)
+        {
+            logReaderWaitTime = stoi(value);
         }
     }
 

@@ -5,16 +5,18 @@
  * Creators.TF Robert Straub 2021
  * =============================================================================
  */
-#include "extension.h"
 #include <memory>
 #include <string>
-#include <DebugListener.h>
+#include <filesystem>
 #include <IPluginSys.h>
 #ifdef WIN
 #define SENTRY_BUILD_STATIC
 #endif
-#include "sentry.h"
+#include "lib/sentry.h"
+#include "DebugListener.h"
+#include "extension.h"
 #include "CTFErrorLoggerConfig.h"
+#include "SMErrorLogReader.h"
 
 using namespace SourceMod;
 using namespace std;
@@ -31,6 +33,7 @@ ITextParsers* textParsers;
 
 DebugListener debugListener;
 shared_ptr<CTFErrorLoggerConfig> config;
+unique_ptr<SMErrorLogReader> errorLogWatcher;
 
 void CTFErrorLogger::Print(const char* toPrint)
 {
@@ -45,14 +48,21 @@ bool CTFErrorLogger::SDK_OnLoad(char* error, size_t maxlength, bool late)
         //Get the souremod text parser. Ignore vs errors its correct.
         SM_GET_IFACE (TEXTPARSERS, textParsers);
 
-        //Load the config and continue if this was successful.
-        config = make_shared<CTFErrorLoggerConfig> ();
         string path = string(smutils->GetSourceModPath());
 #ifdef WIN
         path += "\\configs\\ctferrorlogger.cfg";
 #else
         path += "/configs/ctferrorlogger.cfg";
 #endif
+
+        if (!filesystem::exists(path))
+        {
+            Print("Config was not present, will not load.");
+            return false;
+        }
+
+        //Load the config and continue if this was successful.
+        config = make_shared<CTFErrorLoggerConfig> ();
         auto errorCode = textParsers->ParseFile_SMC(path.c_str(), config.get(), NULL);
         if (!errorCode == SMCError::SMCError_Okay)
         {
@@ -63,13 +73,13 @@ bool CTFErrorLogger::SDK_OnLoad(char* error, size_t maxlength, bool late)
         }
         else
         {
-            string successMessage = "Config Loaded! Server Name: [" + *config->server_name + "]";
+            string successMessage = "Config Loaded! Server Name: [" + config->server_name + "]";
             Print (successMessage.c_str());
         }
 
         //Setup sentry
         sentry_options_t *options = sentry_options_new ();
-        sentry_options_set_dsn (options, config->sentry_dsn_url->c_str());
+        sentry_options_set_dsn (options, config->sentry_dsn_url.c_str());
         sentry_options_set_release (options, SMEXT_CONF_NAME);
         sentry_init (options);
         Print ("Sentry Initalised!");
@@ -89,6 +99,27 @@ bool CTFErrorLogger::SDK_OnLoad(char* error, size_t maxlength, bool late)
 
             Print ("Added Debug Listener");
         }
+
+        //Setup error log watcher
+        string errorLogPath = string(smutils->GetSourceModPath());
+        if (errorLogPath.length() > 0)
+        {
+#ifdef WIN
+            errorLogPath += "\\logs";
+#else
+            errorLogPath += "/logs";
+#endif
+            if (config->logReaderWaitTime != 0)
+            {
+                errorLogWatcher = make_unique<SMErrorLogReader> (errorLogPath, config->logReaderWaitTime);
+                errorLogWatcher->EventReciever = &debugListener;
+                Print("ErrorLogReader was setup.");
+            }
+            else
+            {
+                Print("ErrorLogReader was NOT setup, as a wait time was missing. (0).");
+            }
+        }
         
         return true;
     }
@@ -103,8 +134,9 @@ void CTFErrorLogger::SDK_OnUnload()
 {
 	try
 	{
+        if(errorLogWatcher != nullptr) errorLogWatcher->Stop();
 		auto engine = g_pSM->GetScriptingEngine();
-		engine->SetDebugListener(debugListener.oldListener);
+		if(debugListener.oldListener != nullptr) engine->SetDebugListener(debugListener.oldListener);
 		sentry_close();
 		Print("Unloaded extension and restored old Debug Listener");
 	}

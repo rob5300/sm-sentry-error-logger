@@ -18,39 +18,45 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\extension.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\smsdk_ext.cpp">
       <Filter>SourceMod SDK</Filter>
     </ClCompile>
-    <ClCompile Include="..\DebugListener.cpp">
+    <ClCompile Include="..\src\CTFErrorLoggerConfig.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\CTFErrorLoggerConfig.cpp">
+    <ClCompile Include="..\src\DebugListener.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\extension.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\SMErrorLogReader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\extension.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\smsdk_config.h">
       <Filter>SourceMod SDK</Filter>
     </ClInclude>
     <ClInclude Include="..\..\smsdk_ext.h">
       <Filter>SourceMod SDK</Filter>
     </ClInclude>
-    <ClInclude Include="..\DebugListener.h">
+    <ClInclude Include="..\src\CTFErrorLoggerConfig.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\sentry.h">
+    <ClInclude Include="..\src\DebugListener.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\SPSentryFrame.h">
+    <ClInclude Include="..\src\extension.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\CTFErrorLoggerConfig.h">
+    <ClInclude Include="..\src\SPSentryFrame.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\lib\sentry.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\SMErrorLogReader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
