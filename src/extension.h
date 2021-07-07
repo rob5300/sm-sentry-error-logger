@@ -18,11 +18,19 @@ class CTFErrorLogger : public SDKExtension
 {
 public:
 
+	void OnChangeCoreConVar(IConVar* var, const char* pOldValue, float flOldValue);
+
 	/// <summary>
 	/// Print a formatted message to console
 	/// </summary>
 	/// <param name="toPrint">Message to print</param>
 	void CTFErrorLogger::Print(const char* toPrint);
+
+
+	/// <summary>
+	/// Setup the plugin. Not done via OnLoad as we need to delay Setup till after ConVar values get set.
+	/// </summary>
+	void Setup();
 
 	/**
 	 * @brief This is called after the initial loading sequence has been processed.
@@ -68,7 +76,7 @@ public:
 	 * @param late			Whether or not Metamod considers this a late load.
 	 * @return				True to succeed, false to fail.
 	 */
-	//virtual bool SDK_OnMetamodLoad(ISmmAPI *ismm, char *error, size_t maxlen, bool late);
+	virtual bool SDK_OnMetamodLoad(ISmmAPI *ismm, char *error, size_t maxlen, bool late);
 
 	/**
 	 * @brief Called when Metamod is detaching, after the extension version is called.

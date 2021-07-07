@@ -238,7 +238,8 @@ class ExtensionConfig(object):
       'D:\VSProjects\SOURCEMOD\sourcemod\public\ctf_error_logger_ext\lib\sentry.lib',
       'winhttp.lib',
       'dbghelp.lib',
-      'version.lib'
+      'version.lib',
+	  'legacy_stdio_definitions.lib'
     ]
 
     if builder.options.opt == '1':

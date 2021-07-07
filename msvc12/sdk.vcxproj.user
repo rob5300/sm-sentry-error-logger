@@ -3,4 +3,9 @@
   <PropertyGroup>
     <ShowAllFiles>false</ShowAllFiles>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LocalDebuggerCommand>"D:\TF2 Stuff\ctf_server_workingcopy\srcds.exe"</LocalDebuggerCommand>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+    <LocalDebuggerCommandArguments>-game tf -console -port 27015 +servercfgfile quickplay/server-101 -strictportbind +exec quickplay/server-101 +maxplayers 24 +map pl_upward</LocalDebuggerCommandArguments>
+  </PropertyGroup>
 </Project>

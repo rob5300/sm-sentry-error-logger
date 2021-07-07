@@ -253,6 +253,7 @@
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <CharacterSet>MultiByte</CharacterSet>
     <PlatformToolset>v142</PlatformToolset>
+    <PreferredToolArchitecture>x86</PreferredToolArchitecture>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -454,7 +455,7 @@
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug - Orange Box|Win32'">sample.ext.2.ep2</TargetName>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug - Bloody Good Time|Win32'">sample.ext.2.bgt</TargetName>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug - EYE|Win32'">sample.ext.2.eye</TargetName>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">sample.ext</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">CTFErrorLogger.ext.2.tf2</TargetName>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Release - Dark Messiah|Win32'">sample.ext.2.darkm</TargetName>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Release - Episode 1|Win32'">sample.ext.2.ep1</TargetName>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Release - Left 4 Dead 2|Win32'">sample.ext.2.l4d2</TargetName>
@@ -469,11 +470,14 @@
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Release - EYE|Win32'">sample.ext.2.eye</TargetName>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">sample.ext</TargetName>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(SolutionDir)build</OutDir>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..;..\..;..\..\sourcepawn;..\..\..\sourcepawn\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;SDK_EXPORTS;_CRT_SECURE_NO_DEPRECATE;SOURCEMOD_BUILD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>D:\VSProjects\SOURCEMOD\sourcemod\public\ctf_error_logger_ext\lib;..\..\..\sourcepawn\third_party\amtl\amtl;..\..\..\..\hl2sdk-tf2\public\;..\..\..\..\hl2sdk-tf2\public\tier1;..\..\..\..\mmsource-1.10\core;..;..\..;..\..\sourcepawn;..\..\..\sourcepawn\third_party\amtl\;..\..\..\..\mmsource-1.10\core\sourcehook;..\..\..\sourcepawn\include;..\..\..\..\hl2sdk-tf2\public\tier0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;SDK_EXPORTS;_CRT_SECURE_NO_DEPRECATE;SOURCEMOD_BUILD;KE_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -493,7 +497,11 @@
       <DataExecutionPrevention>
       </DataExecutionPrevention>
       <TargetMachine>MachineX86</TargetMachine>
+      <AdditionalDependencies>legacy_stdio_definitions.lib;version.lib;dbghelp.lib;winhttp.lib;odbccp32.lib;odbc32.lib;D:\VSProjects\SOURCEMOD\hl2sdk-tf2\lib\public\tier0.lib;D:\VSProjects\SOURCEMOD\hl2sdk-tf2\lib\public\tier1.lib;D:\VSProjects\SOURCEMOD\hl2sdk-tf2\lib\public\vstdlib.lib;D:\VSProjects\SOURCEMOD\hl2sdk-tf2\lib\public\mathlib.lib;D:\VSProjects\SOURCEMOD\sourcemod\public\ctf_error_logger_ext\lib\sentry.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>copy $(OutputPath)$(TargetName).* "D:\TF2 Stuff\ctf_server_workingcopy\tf\addons\sourcemod\extensions" /y</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>

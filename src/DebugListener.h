@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 #include <memory>
-#ifdef WIN
+#ifdef _WIN32
 #define SENTRY_BUILD_STATIC
 #endif
 #include "lib/sentry.h"

@@ -9,7 +9,7 @@
 #include <string>
 #include <filesystem>
 #include <IPluginSys.h>
-#ifdef WIN
+#ifdef _WIN32
 #define SENTRY_BUILD_STATIC
 #endif
 #include "lib/sentry.h"
@@ -17,6 +17,8 @@
 #include "extension.h"
 #include "CTFErrorLoggerConfig.h"
 #include "SMErrorLogReader.h"
+#include "convar.h"
+#include "tier1/iconvar.h"
 
 using namespace SourceMod;
 using namespace std;
@@ -29,11 +31,46 @@ using namespace std;
 //Sourcemod objects/pointers.
 CTFErrorLogger g_Sample;
 SMEXT_LINK(&g_Sample);
-ITextParsers* textParsers;
 
 DebugListener debugListener;
 shared_ptr<CTFErrorLoggerConfig> config;
 unique_ptr<SMErrorLogReader> errorLogWatcher;
+
+//Forward declare the function
+void OnChangeCoreConVar ( IConVar *var, const char *pOldValue, float flOldValue );
+
+ConVar ce_server_index("ce_server_index", "0", 0, "Server Numerical ID");
+ConVar ce_sentry_dsn_url("ce_sentry_dsn_url", "", 0, "Sentry DSN URL", OnChangeCoreConVar);
+ConVar ce_server_name("ce_server_name", "Unnamed Server", 0, "Server Name for Sentry");
+ConVar ce_environment("ce_region", "staging", 0, "Server Environment (staging/prod)");
+ConVar ce_region("ce_region", "EU", 0, "Server Region");
+ConVar ce_logreaderwaittime("ce_logreaderwaittime", "30", 0);
+
+bool setup = false;
+
+/** 
+ * Something like this is needed to register cvars/CON_COMMANDs.
+ */
+class BaseAccessor : public IConCommandBaseAccessor
+{
+public:
+	bool RegisterConCommandBase(ConCommandBase *pCommandBase)
+	{
+		/* Always call META_REGCVAR instead of going through the engine. */
+		return META_REGCVAR(pCommandBase);
+	}
+} s_BaseAccessor;
+
+//Callback so we can setup the extension when the sentry url convar has been set.
+void OnChangeCoreConVar ( IConVar *var, const char *pOldValue, float flOldValue )
+{
+	string newDsnUrl = string(((ConVar*)var)->GetString());
+    if (newDsnUrl.length() > 0 && !setup)
+    {
+        auto me = dynamic_cast<CTFErrorLogger*>(myself);
+        me->Setup();
+    }
+}
 
 void CTFErrorLogger::Print(const char* toPrint)
 {
@@ -41,93 +78,66 @@ void CTFErrorLogger::Print(const char* toPrint)
 	printf(newString.c_str());
 }
 
-bool CTFErrorLogger::SDK_OnLoad(char* error, size_t maxlength, bool late)
+void CTFErrorLogger::Setup()
 {
-    try
+    //Make new config and give it the pointer to the ICvar.
+    config = make_shared<CTFErrorLoggerConfig> (g_pCVar);
+    //Setup sentry
+    sentry_options_t *options = sentry_options_new ();
+    sentry_options_set_dsn (options, config->sentry_dsn_url.c_str());
+    sentry_options_set_release (options, SMEXT_CONF_NAME);
+    sentry_init (options);
+    Print ("Sentry Initalised!");
+
+    //Add our debug listener
+    auto engine = g_pSM->GetScriptingEngine ();
+    if (engine != nullptr)
     {
-        //Get the souremod text parser. Ignore vs errors its correct.
-        SM_GET_IFACE (TEXTPARSERS, textParsers);
+        debugListener.config = config;
+        debugListener.onError = [this] () {
+            Print ("Error was logged");
+        };
+        auto oldListener = engine->SetDebugListener (&debugListener);
 
-        string path = string(smutils->GetSourceModPath());
-#ifdef WIN
-        path += "\\configs\\ctferrorlogger.cfg";
+        //Assign old listener so our new one can forward events back to it.
+        debugListener.oldListener = oldListener;
+
+        Print ("Added Debug Listener");
+    }
+
+    //Setup error log watcher
+    string errorLogPath = string(smutils->GetSourceModPath());
+    if (errorLogPath.length() > 0)
+    {
+#ifdef _WIN32
+        errorLogPath += "\\logs";
 #else
-        path += "/configs/ctferrorlogger.cfg";
+        errorLogPath += "/logs";
 #endif
-
-        if (!filesystem::exists(path))
+        if (config->logReaderWaitTime != 0)
         {
-            Print("Config was not present, will not load.");
-            return false;
-        }
-
-        //Load the config and continue if this was successful.
-        config = make_shared<CTFErrorLoggerConfig> ();
-        auto errorCode = textParsers->ParseFile_SMC(path.c_str(), config.get(), NULL);
-        if (!errorCode == SMCError::SMCError_Okay)
-        {
-            string errorMessage = string ("Failed to parse config file, error was: ") + to_string(static_cast<int>(errorCode));
-            Print (errorMessage.c_str());
-            Print ((string ("Attempted Path was: ") + path).c_str());
-            return false;
+            errorLogWatcher = make_unique<SMErrorLogReader> (errorLogPath, config->logReaderWaitTime);
+            errorLogWatcher->EventReciever = &debugListener;
+            Print("ErrorLogReader was setup.");
         }
         else
         {
-            string successMessage = "Config Loaded! Server Name: [" + config->server_name + "]";
-            Print (successMessage.c_str());
+            Print("ErrorLogReader was NOT setup, as a wait time was missing. (0).");
         }
-
-        //Setup sentry
-        sentry_options_t *options = sentry_options_new ();
-        sentry_options_set_dsn (options, config->sentry_dsn_url.c_str());
-        sentry_options_set_release (options, SMEXT_CONF_NAME);
-        sentry_init (options);
-        Print ("Sentry Initalised!");
-
-        //Add our debug listener
-        auto engine = g_pSM->GetScriptingEngine ();
-        if (engine != nullptr)
-        {
-            debugListener.config = config;
-            debugListener.onError = [this] () {
-                Print ("Error was logged");
-            };
-            auto oldListener = engine->SetDebugListener (&debugListener);
-
-            //Assign old listener so our new one can forward events back to it.
-            debugListener.oldListener = oldListener;
-
-            Print ("Added Debug Listener");
-        }
-
-        //Setup error log watcher
-        string errorLogPath = string(smutils->GetSourceModPath());
-        if (errorLogPath.length() > 0)
-        {
-#ifdef WIN
-            errorLogPath += "\\logs";
-#else
-            errorLogPath += "/logs";
-#endif
-            if (config->logReaderWaitTime != 0)
-            {
-                errorLogWatcher = make_unique<SMErrorLogReader> (errorLogPath, config->logReaderWaitTime);
-                errorLogWatcher->EventReciever = &debugListener;
-                Print("ErrorLogReader was setup.");
-            }
-            else
-            {
-                Print("ErrorLogReader was NOT setup, as a wait time was missing. (0).");
-            }
-        }
-        
-        return true;
     }
-    catch (const exception &e)
+
+    setup = true;
+}
+
+bool CTFErrorLogger::SDK_OnLoad(char* error, size_t maxlength, bool late)
+{
+    //Setup now if we have a value for the sentry url convar.
+    string newDsnUrl = string(g_pCVar->FindVar("ce_sentry_dsn_url")->GetString());
+    if (newDsnUrl.length() > 0 && !setup)
     {
-        Print (e.what());
-        return false;
+        Setup();
     }
+    return true;
 }
 
 void CTFErrorLogger::SDK_OnUnload()
@@ -176,4 +186,17 @@ const sp_nativeinfo_t NativeFunctions [] = {
 void CTFErrorLogger::SDK_OnAllLoaded ()
 {
     sharesys->AddNatives (myself, NativeFunctions);
+}
+
+bool CTFErrorLogger::SDK_OnMetamodLoad(ISmmAPI* ismm, char* error, size_t maxlen, bool late)
+{
+    GET_V_IFACE_ANY(GetEngineFactory, g_pCVar, ICvar, CVAR_INTERFACE_VERSION);
+    ConVar_Register(0, &s_BaseAccessor);
+
+    //ConVarRef cvar("ce_server_index");
+    //ConVar *ce_server_indexa = g_pCVar->FindVar("ce_server_index");
+    //string cvarMsg = string("!!!ce_server_index is: ") + cvar.GetString();
+    //Print(cvarMsg.c_str());
+
+    return true;
 }

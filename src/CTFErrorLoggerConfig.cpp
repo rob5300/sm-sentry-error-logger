@@ -1,38 +1,11 @@
 #include "CTFErrorLoggerConfig.h"
-#include <string.h>
 
-using namespace SourceMod;
-using namespace std;
-
-SMCResult CTFErrorLoggerConfig::ReadSMC_KeyValue (const SMCStates *states, const char *key, const char *value)
+CTFErrorLoggerConfig::CTFErrorLoggerConfig(ICvar* icvar)
 {
-    if (key && value)
-    {
-        if (strcmp(key, "sentry_dsn_url") == 0)
-        {
-            sentry_dsn_url = string(value);
-        }
-        else if (strcmp(key, "server_name") == 0)
-        {
-            server_name = string(value);
-        }
-        else if (strcmp(key, "server_id") == 0)
-        {
-            server_id = string(value);
-        }
-        else if (strcmp(key, "environment") == 0)
-        {
-            environment = string(value);
-        }
-        else if (strcmp (key, "region") == 0)
-        {
-            region = string(value);
-        }
-        else if (strcmp(key, "logReaderWaitTime") == 0)
-        {
-            logReaderWaitTime = stoi(value);
-        }
-    }
-
-    return SMCResult::SMCResult_Continue;
+    server_id = icvar->FindVar("ce_server_index")->GetString();
+    sentry_dsn_url = icvar->FindVar("ce_sentry_dsn_url")->GetString();
+    server_name = icvar->FindVar("ce_server_name")->GetString();
+    environment = icvar->FindVar("ce_region")->GetString();
+    region = icvar->FindVar("ce_region")->GetString();
+    logReaderWaitTime = icvar->FindVar("ce_logreaderwaittime")->GetInt();
 }
