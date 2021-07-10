@@ -15,16 +15,17 @@
 # HL2SDK_CSGO = ../../../hl2sdk-csgo
 # MMSOURCE19 = ../../../mmsource-1.10
 
-SMSDK = vendor/sourcemod
-MMSOURCE19 = vendor/mmsource-1.10
-HL2SDK_ORIG = vendor/hl2sdk-proxy-repo
-HL2SDK_TF2 = vendor/hl2sdk-tf2
-HL2SDK_OB = UNUSED
+SMSDK = ../..
+MMSOURCE19 = ../../../mmsource-1.10
+HL2SDK_ORIG = ../../../hl2sdk
+HL2SDK_TF2 = ../../../hl2sdk-tf2
+HL2SDK_OB = ../../../hl2sdk-ob
 HL2SDK_CSS = UNUSED
-HL2SDK_OB_VALVE = UNUSED
+HL2SDK_OB_VALVE = ../../../hl2sdk-ob-valve
 HL2SDK_L4D = UNUSED
 HL2SDK_L4D2 = UNUSED
 HL2SDK_CSGO = UNUSED
+ENGINE = original
 
 #####################################
 ### EDIT BELOW FOR OTHER PROJECTS ###
@@ -33,9 +34,9 @@ HL2SDK_CSGO = UNUSED
 PROJECT = ctferrorlogger
 
 #Uncomment for Metamod: Source enabled extension
-#USEMETA = true
+USEMETA = true
 
-OBJECTS = smsdk_ext.cpp extension.cpp DebugListener.cpp CTFErrorLoggerConfig.cpp
+OBJECTS = smsdk_ext.cpp src/extension.cpp src/DebugListener.cpp src/CTFErrorLoggerConfig.cpp rc/SMErrorLogReader.cpp lib/sentry.a
 
 ##############################################
 ### CONFIGURE ANY OTHER FLAGS/OPTIONS HERE ###
@@ -45,7 +46,7 @@ C_OPT_FLAGS = -DNDEBUG -O3 -funroll-loops -pipe -fno-strict-aliasing
 C_DEBUG_FLAGS = -D_DEBUG -DDEBUG -g -ggdb3
 C_GCC4_FLAGS = -fvisibility=hidden
 CPP_GCC4_FLAGS = -fvisibility-inlines-hidden
-CPP = g++
+CPP = c++
 CPP_OSX = clang
 
 ##########################
@@ -137,12 +138,12 @@ ifeq "$(USEMETA)" "true"
 		-DSE_PORTAL2=11 -DSE_CSGO=12
 endif
 
-LINK += -m32 -lm -ldl
+LINK += -m32 -lm -ldl -lcurl -lstdc++fs -L/usr/lib/i386-linux-gnu/
 
 CFLAGS += -DPOSIX -Dstricmp=strcasecmp -D_stricmp=strcasecmp -D_strnicmp=strncasecmp -Dstrnicmp=strncasecmp \
 	-D_snprintf=snprintf -D_vsnprintf=vsnprintf -D_alloca=alloca -Dstrcmpi=strcasecmp -DCOMPILER_GCC -Wall \
 	-Wno-overloaded-virtual -Wno-switch -Wno-unused -msse -DSOURCEMOD_BUILD -DHAVE_STDINT_H -m32
-CPPFLAGS += -Wno-non-virtual-dtor -fno-rtti -std=c++14 -fpermissive -fexceptions
+CPPFLAGS += -Wno-non-virtual-dtor -fno-rtti -std=c++17 -fpermissive -fexceptions -fvisibility-inlines-hidden -fvisibility-inlines-hidden -fvisibility-inlines-hidden
 
 ################################################
 ### DO NOT EDIT BELOW HERE FOR MOST PROJECTS ###
@@ -169,7 +170,7 @@ ifeq "$(OS)" "Darwin"
 	LINK += -dynamiclib -lstdc++ -mmacosx-version-min=10.5
 else
 	LIB_EXT = so
-	CFLAGS += -D_LINUX
+	CFLAGS += -D_LINUX -DLINUX
 	LINK += -shared
 endif
 
@@ -212,7 +213,7 @@ OBJ_BIN := $(OBJECTS:%.cpp=$(BIN_DIR)/%.o)
 MAKEFILE_NAME := $(CURDIR)/$(word $(words $(MAKEFILE_LIST)),$(MAKEFILE_LIST))
 
 $(BIN_DIR)/%.o: %.cpp
-	$(CPP) -L/mnt/d/ -lsentry $(INCLUDE) $(CFLAGS) $(CPPFLAGS) -o $@ -c $<
+	$(CPP) $(INCLUDE) $(CFLAGS) $(CPPFLAGS) -o $@ -c $<
 
 all: check
 	mkdir -p $(BIN_DIR)
@@ -231,7 +232,7 @@ check:
 	fi
 
 extension: check $(OBJ_BIN)
-	$(CPP) -L/mnt/d/ -lsentry $(INCLUDE) $(OBJ_BIN) $(LINK) -o $(BIN_DIR)/$(BINARY)
+	$(CPP) $(INCLUDE) $(LINK) $(OBJ_BIN) -o $(BIN_DIR)/$(BINARY)
 
 debug:
 	$(MAKE) -f $(MAKEFILE_NAME) all DEBUG=true
