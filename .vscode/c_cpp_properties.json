@@ -1,0 +1,56 @@
+{
+    "configurations": [
+        {
+            "name": "Win32",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "${workspaceFolder}/lib",
+                "${workspaceFolder}\\..\\..\\sourcepawn\\third_party\\amtl\\amtl",
+                "${workspaceFolder}\\..\\..\\..\\hl2sdk-tf2\\public\\",
+                "${workspaceFolder}\\..\\..\\..\\hl2sdk-tf2\\public\\tier1",
+                "${workspaceFolder}\\..\\..\\..\\mmsource-1.10\\core",
+                "${workspaceFolder}\\..",
+                "${workspaceFolder}\\..\\..\\sourcepawn",
+                "${workspaceFolder}\\..\\..\\sourcepawn\\third_party\\amtl\\",
+                "${workspaceFolder}\\..\\..\\..\\mmsource-1.10\\core\\sourcehook",
+                "${workspaceFolder}\\..\\..\\sourcepawn\\include",
+                "${workspaceFolder}\\..\\..\\..\\hl2sdk-tf2\\public\\tier0"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE",
+                "_DEBUG",
+                "_WINDOWS",
+                "_USRDLL",
+                "SDK_EXPORTS",
+                "_CRT_SECURE_NO_DEPRECATE",
+                "SOURCEMOD_BUILD",
+                "KE_WINDOWS",
+                "_WINDLL",
+                "_MBCS"
+            ],
+            "windowsSdkVersion": "10.0.17763.0",
+            "compilerPath": "C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Tools/MSVC/14.28.29910/bin/Hostx64/x64/cl.exe",
+            "cStandard": "c17",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "windows-msvc-x64",
+            "compilerArgs": [
+                "legacy_stdio_definitions.lib",
+                "version.lib",
+                "dbghelp.lib",
+                "winhttp.lib",
+                "odbccp32.lib",
+                "odbc32.lib",
+                "${workspaceFolder}\\..\\..\\..\\hl2sdk-tf2\\lib\\public\\tier0.lib",
+                "${workspaceFolder}\\..\\..\\..\\hl2sdk-tf2\\lib\\public\\tier1.lib",
+                "${workspaceFolder}\\..\\..\\..\\hl2sdk-tf2\\lib\\public\\vstdlib.lib",
+                "${workspaceFolder}\\..\\..\\..\\\\hl2sdk-tf2\\lib\\public\\mathlib.lib",
+                "${workspaceFolder}\\lib\\sentry.lib",
+                "/Zc:inline",
+                "/fp:precise"
+            ]
+        }
+    ],
+    "version": 4
+}

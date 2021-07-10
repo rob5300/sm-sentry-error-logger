@@ -67,7 +67,8 @@ void OnChangeCoreConVar ( IConVar *var, const char *pOldValue, float flOldValue 
 	string newDsnUrl = string(((ConVar*)var)->GetString());
     if (newDsnUrl.length() > 0 && !setup)
     {
-        auto me = dynamic_cast<CTFErrorLogger*>(myself);
+        auto me = reinterpret_cast<CTFErrorLogger*>(myself);
+        me->Print("ConVar value found for sentry_dsn_url, can setup.");
         me->Setup();
     }
 }
@@ -136,6 +137,10 @@ bool CTFErrorLogger::SDK_OnLoad(char* error, size_t maxlength, bool late)
     if (newDsnUrl.length() > 0 && !setup)
     {
         Setup();
+    }
+    else
+    {
+        Print("Delaying setup");
     }
     return true;
 }
