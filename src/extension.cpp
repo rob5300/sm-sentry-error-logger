@@ -12,13 +12,14 @@
 #ifdef _WIN32
 #define SENTRY_BUILD_STATIC
 #endif
-#include "lib/sentry.h"
-#include "DebugListener.h"
 #include "extension.h"
+#include "tier1/iconvar.h"
+#include "convar.h"
+#include "icvar.h"
 #include "CTFErrorLoggerConfig.h"
 #include "SMErrorLogReader.h"
-#include "convar.h"
-#include "tier1/iconvar.h"
+#include "lib/sentry.h"
+#include "DebugListener.h"
 
 using namespace SourceMod;
 using namespace std;

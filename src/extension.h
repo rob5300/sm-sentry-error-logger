@@ -24,7 +24,7 @@ public:
 	/// Print a formatted message to console
 	/// </summary>
 	/// <param name="toPrint">Message to print</param>
-	void CTFErrorLogger::Print(const char* toPrint);
+	void Print(const char* toPrint);
 
 
 	/// <summary>

@@ -17,7 +17,7 @@
 
 SMSDK = ../..
 MMSOURCE19 = ../../../mmsource-1.10
-HL2SDK_ORIG = ../../../hl2sdk
+HL2SDK_ORIG = ../../../hl2sdk-tf2
 HL2SDK_TF2 = ../../../hl2sdk-tf2
 HL2SDK_OB = ../../../hl2sdk-ob
 HL2SDK_CSS = UNUSED
@@ -36,7 +36,7 @@ PROJECT = ctferrorlogger
 #Uncomment for Metamod: Source enabled extension
 USEMETA = true
 
-OBJECTS = smsdk_ext.cpp src/extension.cpp src/DebugListener.cpp src/CTFErrorLoggerConfig.cpp rc/SMErrorLogReader.cpp lib/sentry.a
+OBJECTS = smsdk_ext.cpp src/extension.cpp src/DebugListener.cpp src/CTFErrorLoggerConfig.cpp src/SMErrorLogReader.cpp $(HL2LIB)/tier1_i486.a $(HL2LIB)/mathlib_i486.a lib/sentry.a
 
 ##############################################
 ### CONFIGURE ANY OTHER FLAGS/OPTIONS HERE ###
@@ -46,8 +46,8 @@ C_OPT_FLAGS = -DNDEBUG -O3 -funroll-loops -pipe -fno-strict-aliasing
 C_DEBUG_FLAGS = -D_DEBUG -DDEBUG -g -ggdb3
 C_GCC4_FLAGS = -fvisibility=hidden
 CPP_GCC4_FLAGS = -fvisibility-inlines-hidden
-CPP = c++
-CPP_OSX = clang
+CPP = clang
+CPP_OSX = left4dead2
 
 ##########################
 ### SDK CONFIGURATIONS ###
@@ -107,7 +107,7 @@ ifeq "$(OS)" "Darwin"
 else
 	LIB_EXT = so
 	ifeq "$(ENGINE)" "original"
-		HL2LIB = $(HL2SDK)/linux_sdk
+		HL2LIB = $(HL2SDK)/lib/linux
 	else
 		HL2LIB = $(HL2SDK)/lib/linux
 	endif
@@ -121,10 +121,10 @@ else
 	LIB_SUFFIX = .$(LIB_EXT)
 endif
 
-INCLUDE += -I. -I.. -Isdk -I$(SMSDK)/public -I$(SMSDK)/sourcepawn/include -I$(SMSDK)/sourcepawn/third_party -I$(SMSDK)/sourcepawn/third_party/amtl/amtl -I$(SMSDK)/sourcepawn/third_party/amtl
+INCLUDE += -I. -I.. -Isdk -I$(SMSDK)/public -I$(SMSDK)/sourcepawn/include -I$(SMSDK)/sourcepawn/third_party -I$(SMSDK)/sourcepawn/third_party/amtl/amtl -I$(SMSDK)/sourcepawn/third_party/amtl -I$(HL2SDK_TF2)/public -I$(HL2SDK_TF2)/public/engine -I$(HL2SDK_TF2)/public/tier1 -I$(HL2SDK_TF2)/public/tier0 -I$(MMSOURCE19)/core -I$(MMSOURCE19)/core/sourcehook -I$(HL2SDK_TF2)/public/mathlib -I$(HL2SDK_TF2)/vstdlib -I$(HL2SDK_TF2)/public/game/server -I$(HL2SDK_TF2)/game/shared -I$(HL2SDK_TF2)/common -I$(HL2SDK_TF2)/public/toolframework
 
 ifeq "$(USEMETA)" "true"
-	LINK_HL2 = $(HL2LIB)/tier1_i486.a $(LIB_PREFIX)vstdlib$(LIB_SUFFIX) $(LIB_PREFIX)tier0$(LIB_SUFFIX)
+	LINK_HL2 = -L $(HL2LIB) -l tier0_srv -l vstdlib_srv
 	ifeq "$(ENGINE)" "csgo"
 		LINK_HL2 += $(HL2LIB)/interfaces_i486.a
 	endif
@@ -135,15 +135,15 @@ ifeq "$(USEMETA)" "true"
 		-I$(METAMOD)/sourcehook 
 	CFLAGS += -DSE_EPISODEONE=1 -DSE_DARKMESSIAH=2 -DSE_ORANGEBOX=3 -DSE_BLOODYGOODTIME=4 -DSE_EYE=5 \
 		-DSE_CSS=6 -DSE_ORANGEBOXVALVE=7 -DSE_LEFT4DEAD=8 -DSE_LEFT4DEAD2=9 -DSE_ALIENSWARM=10 \
-		-DSE_PORTAL2=11 -DSE_CSGO=12
+		-DSE_PORTAL2=11 -DSE_CSGO=12 -DSE_TF2=11
 endif
 
-LINK += -m32 -lm -ldl -lcurl -lstdc++fs -L/usr/lib/i386-linux-gnu/
+LINK += -m32 -L/usr/lib/i386-linux-gnu/ -lm -ldl -lcurl -lstdc++fs -lstdc++ -lcurl -std=c17
 
 CFLAGS += -DPOSIX -Dstricmp=strcasecmp -D_stricmp=strcasecmp -D_strnicmp=strncasecmp -Dstrnicmp=strncasecmp \
 	-D_snprintf=snprintf -D_vsnprintf=vsnprintf -D_alloca=alloca -Dstrcmpi=strcasecmp -DCOMPILER_GCC -Wall \
-	-Wno-overloaded-virtual -Wno-switch -Wno-unused -msse -DSOURCEMOD_BUILD -DHAVE_STDINT_H -m32
-CPPFLAGS += -Wno-non-virtual-dtor -fno-rtti -std=c++17 -fpermissive -fexceptions -fvisibility-inlines-hidden -fvisibility-inlines-hidden -fvisibility-inlines-hidden
+	-Wno-overloaded-virtual -Wno-switch -Wno-unused -msse -DSOURCEMOD_BUILD -DHAVE_STDINT_H -m32 -DGNUC 
+CPPFLAGS += -Wno-non-virtual-dtor -fno-rtti -std=c++17 -fpermissive -fexceptions -fvisibility-inlines-hidden -fvisibility-inlines-hidden -fvisibility-inlines-hidden -Wno-register -Wno-address-of-temporary
 
 ################################################
 ### DO NOT EDIT BELOW HERE FOR MOST PROJECTS ###
@@ -232,7 +232,7 @@ check:
 	fi
 
 extension: check $(OBJ_BIN)
-	$(CPP) $(INCLUDE) $(LINK) $(OBJ_BIN) -o $(BIN_DIR)/$(BINARY)
+	$(CPP) $(LINK) $(INCLUDE) $(OBJ_BIN) -o $(BIN_DIR)/$(BINARY)
 
 debug:
 	$(MAKE) -f $(MAKEFILE_NAME) all DEBUG=true

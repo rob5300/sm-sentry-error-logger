@@ -48,7 +48,7 @@ public:
 	/// <param name="blame">Error source</param>
 	/// <param name="message">Main error message</param>
 	/// <returns>New Sentry event object</returns>
-    sentry_value_t DebugListener::GetBaseMessage (const char *blame, const char *message);
+    sentry_value_t GetBaseMessage (const char *blame, const char *message);
 
 	/// <summary>
 	/// Get notified when a new Log File error is found.
@@ -61,6 +61,6 @@ private:
 	/// Get the error stack information for sentry from the error. 
 	/// Modified version of SourceMod DebugReporter::GetStackTrace
 	/// </summary>
-	std::vector<SPSentryFrame> DebugListener::GetStackTrace(IFrameIterator &iter);
+	std::vector<SPSentryFrame> GetStackTrace(IFrameIterator &iter);
     
 };
