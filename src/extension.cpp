@@ -43,7 +43,7 @@ void OnChangeCoreConVar ( IConVar *var, const char *pOldValue, float flOldValue 
 ConVar ce_server_index("ce_server_index", "0", 0, "Server Numerical ID");
 ConVar ce_sentry_dsn_url("ce_sentry_dsn_url", "", 0, "Sentry DSN URL", OnChangeCoreConVar);
 ConVar ce_server_name("ce_server_name", "Unnamed Server", 0, "Server Name for Sentry");
-ConVar ce_environment("ce_region", "staging", 0, "Server Environment (staging/prod)");
+ConVar ce_environment("ce_environment", "staging", 0, "Server Environment (staging/prod)");
 ConVar ce_region("ce_region", "EU", 0, "Server Region");
 ConVar ce_logreaderwaittime("ce_logreaderwaittime", "30", 0);
 
