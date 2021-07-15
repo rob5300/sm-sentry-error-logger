@@ -36,7 +36,7 @@ PROJECT = ctferrorlogger
 #Uncomment for Metamod: Source enabled extension
 USEMETA = true
 
-OBJECTS = smsdk_ext.cpp src/extension.cpp src/DebugListener.cpp src/CTFErrorLoggerConfig.cpp src/SMErrorLogReader.cpp $(HL2LIB)/tier1_i486.a $(HL2LIB)/mathlib_i486.a lib/sentry.a
+OBJECTS = smsdk_ext.cpp src/extension.cpp src/DebugListener.cpp src/CTFErrorLoggerConfig.cpp src/SMErrorLogReader.cpp $(HL2LIB)/mathlib_i486.a $(HL2LIB)/tier1_i486.a lib/sentry.a
 
 ##############################################
 ### CONFIGURE ANY OTHER FLAGS/OPTIONS HERE ###
@@ -46,7 +46,7 @@ C_OPT_FLAGS = -DNDEBUG -O3 -funroll-loops -pipe -fno-strict-aliasing
 C_DEBUG_FLAGS = -D_DEBUG -DDEBUG -g -ggdb3
 C_GCC4_FLAGS = -fvisibility=hidden
 CPP_GCC4_FLAGS = -fvisibility-inlines-hidden
-CPP = clang
+CPP = c++
 CPP_OSX = left4dead2
 
 ##########################
@@ -138,7 +138,7 @@ ifeq "$(USEMETA)" "true"
 		-DSE_PORTAL2=11 -DSE_CSGO=12 -DSE_TF2=11
 endif
 
-LINK += -m32 -L/usr/lib/i386-linux-gnu/ -lm -ldl -lcurl -lstdc++fs -lstdc++ -lcurl -std=c17
+LINK += -m32 -L/usr/lib/i386-linux-gnu/ -lm -ldl -lcurl -lstdc++fs -lstdc++ -lcurl -std=c17 -static-libgcc
 
 CFLAGS += -DPOSIX -Dstricmp=strcasecmp -D_stricmp=strcasecmp -D_strnicmp=strncasecmp -Dstrnicmp=strncasecmp \
 	-D_snprintf=snprintf -D_vsnprintf=vsnprintf -D_alloca=alloca -Dstrcmpi=strcasecmp -DCOMPILER_GCC -Wall \
@@ -232,7 +232,7 @@ check:
 	fi
 
 extension: check $(OBJ_BIN)
-	$(CPP) $(LINK) $(INCLUDE) $(OBJ_BIN) -o $(BIN_DIR)/$(BINARY)
+	$(CPP) $(INCLUDE) $(OBJ_BIN) $(LINK) -o $(BIN_DIR)/$(BINARY)
 
 debug:
 	$(MAKE) -f $(MAKEFILE_NAME) all DEBUG=true
