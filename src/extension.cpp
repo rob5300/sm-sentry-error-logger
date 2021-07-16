@@ -42,10 +42,9 @@ void OnChangeCoreConVar ( IConVar *var, const char *pOldValue, float flOldValue 
 
 ConVar ce_server_index("ce_server_index", "0", 0, "Server Numerical ID");
 ConVar ce_sentry_dsn_url("ce_sentry_dsn_url", "", 0, "Sentry DSN URL", OnChangeCoreConVar);
-ConVar ce_server_name("ce_server_name", "", 0, "Server Name for Sentry");
 ConVar ce_environment("ce_environment", "staging", 0, "Server Environment (staging/prod)");
 ConVar ce_region("ce_region", "EU", 0, "Server Region");
-ConVar ce_logreaderwaittime("ce_logreaderwaittime", "30", 0);
+ConVar ce_logreaderwaittime("ce_logreaderwaittime", "120", 0);
 
 bool setup = false;
 
@@ -88,8 +87,14 @@ void CTFErrorLogger::Setup()
     sentry_options_t *options = sentry_options_new ();
     sentry_options_set_dsn (options, config->sentry_dsn_url.c_str());
     sentry_options_set_release (options, SMEXT_CONF_NAME);
-    sentry_init (options);
-    Print ("Sentry Initalised!");
+    if (sentry_init(options) == 0)
+    {
+        Print ("Sentry Initalised!");
+    }
+    else
+    {
+        Print ((string("Sentry Did NOT Initialize, url used: ") + config->sentry_dsn_url).c_str());
+    }
 
     //Add our debug listener
     auto engine = g_pSM->GetScriptingEngine ();
@@ -116,16 +121,9 @@ void CTFErrorLogger::Setup()
 #else
         errorLogPath += "/logs";
 #endif
-        if (config->logReaderWaitTime != 0)
-        {
-            errorLogWatcher = make_unique<SMErrorLogReader> (errorLogPath, config->logReaderWaitTime);
-            errorLogWatcher->EventReciever = &debugListener;
-            Print("ErrorLogReader was setup.");
-        }
-        else
-        {
-            Print("ErrorLogReader was NOT setup, as a wait time was missing. (0).");
-        }
+        errorLogWatcher = make_unique<SMErrorLogReader> (errorLogPath, config->logReaderWaitTime);
+        errorLogWatcher->EventReciever = &debugListener;
+        Print("ErrorLogReader was setup.");
     }
 
     setup = true;
@@ -156,9 +154,10 @@ void CTFErrorLogger::SDK_OnUnload()
 		sentry_close();
 		Print("Unloaded extension and restored old Debug Listener");
 	}
-	catch (exception &e)
+	catch (const exception &e)
 	{
-		Print(strcat("Things may break, Failed to fully unload due to: ", e.what()));
+        string errorMsg = string("Things may break, Failed to fully unload due to: ") + string(e.what());
+		Print(errorMsg.c_str());
 	}
 }
 

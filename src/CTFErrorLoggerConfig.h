@@ -12,11 +12,11 @@ class CTFErrorLoggerConfig
 {
 public:
     std::string sentry_dsn_url;
-    std::string server_name;
-    std::string server_id;
-    std::string environment;
-    std::string region;
-    int32_t logReaderWaitTime = 0;
+    ConVar* server_name;
+    ConVar* server_id;
+    ConVar* environment;
+    ConVar* region;
+    ConVar* logReaderWaitTime = 0;
 
     CTFErrorLoggerConfig(ICvar* icvar);
 };

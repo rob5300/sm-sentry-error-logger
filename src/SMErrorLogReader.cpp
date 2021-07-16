@@ -17,7 +17,7 @@ string ignoreStrings[] = {
     "Exception reported"
 };
 
-SMErrorLogReader::SMErrorLogReader (string &_errorLogPath, int32_t& _waitTime)
+SMErrorLogReader::SMErrorLogReader (string &_errorLogPath, ConVar* _waitTime)
 {
 	errorLogPath = _errorLogPath;
     waitTime = _waitTime;
@@ -55,14 +55,14 @@ void SMErrorLogReader::WatchErrorLog ()
                 if(EventReciever != nullptr) EventReciever->OnSMErrorFound(errorContents);
             }
         }
-        const string message = string("[SMErrorLogReader] Error Log '") + newestErrorLogPath.filename().generic_string() + string("' was checked for new errors. Next try in ") + to_string(waitTime) + string(" seconds\n");
+        const string message = string("[SMErrorLogReader] Error Log '") + newestErrorLogPath.filename().generic_string() + string("' was checked for new errors. Next try in ") + waitTime->GetString() + string(" seconds\n");
         printf(message.c_str());
 
         if(!active) return;
 
         //Wait for the specified time to check the logs again.
         std::unique_lock<std::mutex> lk(loopMutex);
-        loopConditionVar.wait_for(lk, chrono::seconds(waitTime), [this]{return !active;});
+        loopConditionVar.wait_for(lk, chrono::seconds(waitTime->GetInt()), [this]{return !active;});
         lk.unlock();
         loopConditionVar.notify_one();
     }

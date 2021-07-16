@@ -6,6 +6,7 @@
 #include <thread>
 #include <mutex>
 #include <condition_variable>
+#include "convar.h"
 
 /// <summary>
 /// Can be notifified of a new SM Error Log Error
@@ -24,12 +25,12 @@ class SMErrorLogReader
 	public:
 		IErrorLogEventReciever* EventReciever;
 
-		SMErrorLogReader(std::string& _errorLogPath, int32_t& _waitTime);
+		SMErrorLogReader(std::string& _errorLogPath, ConVar* _waitTime);
 		void Stop();
 
 	private:
 		bool active;
-		int32_t waitTime;
+		ConVar* waitTime;
 		std::string errorLogRegex;
 		std::string errorLogPath;
 		std::unordered_set<std::string> pastLogContents;

@@ -1,4 +1,5 @@
 #include "DebugListener.h"
+#include "iconvar.h"
 
 using namespace SourcePawn;
 using namespace std;
@@ -154,12 +155,12 @@ vector<SPSentryFrame> DebugListener::GetStackTrace(IFrameIterator &iter)
 sentry_value_t DebugListener::GetBaseMessage (const char *blame, const char *message)
 {
 	sentry_value_t event = sentry_value_new_message_event (SENTRY_LEVEL_ERROR, blame, message);
-    sentry_setstrvalue (event, "server_name", config->server_name.c_str ());
-    sentry_setstrvalue (event, "environment", config->environment.c_str ());
+    sentry_setstrvalue (event, "server_name", config->server_name->GetString());
+    sentry_setstrvalue (event, "environment", config->environment->GetString());
 
     sentry_value_t tags = sentry_value_new_object ();
-    sentry_setstrvalue (tags, "server_id", config->server_id.c_str());
-    sentry_setstrvalue (tags, "region", config->region.c_str());
+    sentry_setstrvalue (tags, "server_id", config->server_id->GetString());
+    sentry_setstrvalue (tags, "region", config->region->GetString());
 
 	//Add the servers current map as a tag.
 	string currentMap = "unknown_map";
