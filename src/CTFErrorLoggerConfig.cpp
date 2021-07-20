@@ -8,4 +8,5 @@ CTFErrorLoggerConfig::CTFErrorLoggerConfig(ICvar* icvar)
     environment = icvar->FindVar("ce_environment");
     region = icvar->FindVar("ce_region");
     logReaderWaitTime = icvar->FindVar("ce_logreaderwaittime");
+    type = icvar->FindVar("ce_type");
 }

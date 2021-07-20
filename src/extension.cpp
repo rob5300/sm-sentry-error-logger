@@ -45,6 +45,7 @@ ConVar ce_sentry_dsn_url("ce_sentry_dsn_url", "", 0, "Sentry DSN URL", OnChangeC
 ConVar ce_environment("ce_environment", "staging", 0, "Server Environment (staging/prod)");
 ConVar ce_region("ce_region", "EU", 0, "Server Region");
 ConVar ce_logreaderwaittime("ce_logreaderwaittime", "120", 0);
+ConVar ce_type("ce_type", "", 0, "Creators.TF Server Type");
 
 bool setup = false;
 
@@ -86,7 +87,8 @@ void CTFErrorLogger::Setup()
     //Setup sentry
     sentry_options_t *options = sentry_options_new ();
     sentry_options_set_dsn (options, config->sentry_dsn_url.c_str());
-    sentry_options_set_release (options, SMEXT_CONF_NAME);
+    auto loggerName = string(SMEXT_CONF_NAME) + string("_") + string(SMEXT_CONF_VERSION);
+    sentry_options_set_release (options, loggerName.c_str());
     if (sentry_init(options) == 0)
     {
         Print ("Sentry Initalised!");

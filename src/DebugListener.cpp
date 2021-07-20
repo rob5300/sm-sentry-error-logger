@@ -161,6 +161,7 @@ sentry_value_t DebugListener::GetBaseMessage (const char *blame, const char *mes
     sentry_value_t tags = sentry_value_new_object ();
     sentry_setstrvalue (tags, "server_id", config->server_id->GetString());
     sentry_setstrvalue (tags, "region", config->region->GetString());
+	sentry_setstrvalue (tags, "server_type", config->type->GetString());
 
 	//Add the servers current map as a tag.
 	string currentMap = "unknown_map";

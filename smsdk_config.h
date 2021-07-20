@@ -39,8 +39,8 @@
 
 /* Basic information exposed publicly */
 #define SMEXT_CONF_NAME			"C.TF Error Logger"
-#define SMEXT_CONF_DESCRIPTION	"Capture errors and report on the web."
-#define SMEXT_CONF_VERSION		"0.0.0.1"
+#define SMEXT_CONF_DESCRIPTION	"Capture SP exceptions and SM errors and report on the web via Sentry."
+#define SMEXT_CONF_VERSION		"1.0.0.0"
 #define SMEXT_CONF_AUTHOR		"rob5300 - Creators.TF"
 #define SMEXT_CONF_URL			"https://creators.tf"
 #define SMEXT_CONF_LOGTAG		"C.TF Error Logger"

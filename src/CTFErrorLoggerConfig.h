@@ -17,6 +17,7 @@ public:
     ConVar* environment;
     ConVar* region;
     ConVar* logReaderWaitTime = 0;
+    ConVar* type;
 
     CTFErrorLoggerConfig(ICvar* icvar);
 };
