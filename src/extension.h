@@ -32,6 +32,9 @@ public:
 	/// </summary>
 	void Setup();
 
+    /// Try to setup the extension if possible.
+    bool TrySetup();
+
 	/**
 	 * @brief This is called after the initial loading sequence has been processed.
 	 *

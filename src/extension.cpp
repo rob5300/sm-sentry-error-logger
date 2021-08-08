@@ -80,6 +80,26 @@ void CTFErrorLogger::Print(const char* toPrint)
 	printf(newString.c_str());
 }
 
+bool CTFErrorLogger::TrySetup()
+{
+    if(setup || g_pCVar == nullptr) return false;
+
+    auto cvar = g_pCVar->FindVar("ce_sentry_dsn_url");
+
+    if(cvar != nullptr)
+    {
+        //Setup now if we have a value for the sentry url convar.
+        string newDsnUrl = string(cvar->GetString());
+        if (newDsnUrl.length() > 0 && !setup)
+        {
+            Setup();
+            return true;
+        }
+    }
+    else Print("Cvar 'ce_sentry_dsn_url' was null!");
+    return false;
+}
+
 void CTFErrorLogger::Setup()
 {
     //Make new config and give it the pointer to the ICvar.
@@ -133,15 +153,9 @@ void CTFErrorLogger::Setup()
 
 bool CTFErrorLogger::SDK_OnLoad(char* error, size_t maxlength, bool late)
 {
-    //Setup now if we have a value for the sentry url convar.
-    string newDsnUrl = string(g_pCVar->FindVar("ce_sentry_dsn_url")->GetString());
-    if (newDsnUrl.length() > 0 && !setup)
+    if(!TrySetup())
     {
-        Setup();
-    }
-    else
-    {
-        Print("Delaying setup");
+        Print("Delaying Setup.");
     }
     return true;
 }
@@ -154,7 +168,9 @@ void CTFErrorLogger::SDK_OnUnload()
 		auto engine = g_pSM->GetScriptingEngine();
 		if(debugListener.oldListener != nullptr) engine->SetDebugListener(debugListener.oldListener);
 		sentry_close();
+        ConVar_Unregister();
 		Print("Unloaded extension and restored old Debug Listener");
+        setup = false;
 	}
 	catch (const exception &e)
 	{
@@ -200,10 +216,7 @@ bool CTFErrorLogger::SDK_OnMetamodLoad(ISmmAPI* ismm, char* error, size_t maxlen
     GET_V_IFACE_ANY(GetEngineFactory, g_pCVar, ICvar, CVAR_INTERFACE_VERSION);
     ConVar_Register(0, &s_BaseAccessor);
 
-    //ConVarRef cvar("ce_server_index");
-    //ConVar *ce_server_indexa = g_pCVar->FindVar("ce_server_index");
-    //string cvarMsg = string("!!!ce_server_index is: ") + cvar.GetString();
-    //Print(cvarMsg.c_str());
+    TrySetup();
 
     return true;
 }

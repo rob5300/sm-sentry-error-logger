@@ -243,3 +243,5 @@ clean: check
 	rm -rf $(BIN_DIR)/*.o
 	rm -rf $(BIN_DIR)/$(BINARY)
 
+copy:
+	cp ./$(BIN_DIR)/$(BINARY) /media/robert/rob_s/SOURCEMOD/tf2-linux-server/tfserver/tf/addons/sourcemod/extensions/$(BINARY)
