@@ -6,7 +6,6 @@
 
 /// <summary>
 /// Configuration class for the CTF Error Logger. 
-/// Will assign expected data to the string pointers when parsing is done.
 /// </summary>
 class CTFErrorLoggerConfig
 {

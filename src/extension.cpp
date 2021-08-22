@@ -24,11 +24,6 @@
 using namespace SourceMod;
 using namespace std;
 
-/**
- * @file extension.cpp
- * @brief Main extension object for the Error Logger
- */
-
 //Sourcemod objects/pointers.
 CTFErrorLogger g_Sample;
 SMEXT_LINK(&g_Sample);
@@ -37,20 +32,31 @@ DebugListener debugListener;
 shared_ptr<CTFErrorLoggerConfig> config;
 unique_ptr<SMErrorLogReader> errorLogWatcher;
 
-//Forward declare the function
-void OnChangeCoreConVar ( IConVar *var, const char *pOldValue, float flOldValue );
+//Callback so we can setup the extension when the sentry url convar has been set.
+//Required as the extension is loaded before convars exist.
+void OnChangeCoreConVar ( IConVar *var, const char *pOldValue, float flOldValue )
+{
+	string newDsnUrl = string(((ConVar*)var)->GetString());
+    if (newDsnUrl.length() > 0 && !setup)
+    {
+        auto me = reinterpret_cast<CTFErrorLogger*>(myself);
+        me->Print("ConVar value found for sentry_dsn_url, can setup.");
+        me->Setup();
+    }
+}
 
+//ConVars
 ConVar ce_server_index("ce_server_index", "0", 0, "Server Numerical ID");
 ConVar ce_sentry_dsn_url("ce_sentry_dsn_url", "", 0, "Sentry DSN URL", OnChangeCoreConVar);
 ConVar ce_environment("ce_environment", "staging", 0, "Server Environment (staging/prod)");
 ConVar ce_region("ce_region", "EU", 0, "Server Region");
 ConVar ce_logreaderwaittime("ce_logreaderwaittime", "120", 0);
-ConVar ce_type("ce_type", "", 0, "Creators.TF Server Type");
+ConVar ce_type("ce_type", "", 0, "Server Type");
 
 bool setup = false;
 
 /** 
- * Something like this is needed to register cvars/CON_COMMANDs.
+ * Class to allow our convars to be properly registered.
  */
 class BaseAccessor : public IConCommandBaseAccessor
 {
@@ -62,17 +68,7 @@ public:
 	}
 } s_BaseAccessor;
 
-//Callback so we can setup the extension when the sentry url convar has been set.
-void OnChangeCoreConVar ( IConVar *var, const char *pOldValue, float flOldValue )
-{
-	string newDsnUrl = string(((ConVar*)var)->GetString());
-    if (newDsnUrl.length() > 0 && !setup)
-    {
-        auto me = reinterpret_cast<CTFErrorLogger*>(myself);
-        me->Print("ConVar value found for sentry_dsn_url, can setup.");
-        me->Setup();
-    }
-}
+//Extension Class Definitions
 
 void CTFErrorLogger::Print(const char* toPrint)
 {
@@ -119,14 +115,14 @@ void CTFErrorLogger::Setup()
     }
 
     //Add our debug listener
-    auto engine = g_pSM->GetScriptingEngine ();
-    if (engine != nullptr)
+    auto spEngine = g_pSM->GetScriptingEngine ();
+    if (spEngine != nullptr)
     {
         debugListener.config = config;
         debugListener.onError = [this] () {
             Print ("Error was logged");
         };
-        auto oldListener = engine->SetDebugListener (&debugListener);
+        auto oldListener = spEngine->SetDebugListener (&debugListener);
 
         //Assign old listener so our new one can forward events back to it.
         debugListener.oldListener = oldListener;
@@ -155,28 +151,20 @@ bool CTFErrorLogger::SDK_OnLoad(char* error, size_t maxlength, bool late)
 {
     if(!TrySetup())
     {
-        Print("Delaying Setup.");
+        Print("Delaying Setup until a value is found for 'ce_sentry_dsn_url'");
     }
     return true;
 }
 
 void CTFErrorLogger::SDK_OnUnload()
 {
-	try
-	{
-        if(errorLogWatcher != nullptr) errorLogWatcher->Stop();
-		auto engine = g_pSM->GetScriptingEngine();
-		if(debugListener.oldListener != nullptr) engine->SetDebugListener(debugListener.oldListener);
-		sentry_close();
-        ConVar_Unregister();
-		Print("Unloaded extension and restored old Debug Listener");
-        setup = false;
-	}
-	catch (const exception &e)
-	{
-        string errorMsg = string("Things may break, Failed to fully unload due to: ") + string(e.what());
-		Print(errorMsg.c_str());
-	}
+	if(errorLogWatcher != nullptr) errorLogWatcher->Stop();
+	auto spEngine = g_pSM->GetScriptingEngine();
+	if(debugListener.oldListener != nullptr) spEngine->SetDebugListener(debugListener.oldListener);
+	sentry_close();
+    ConVar_Unregister();
+	Print("Unloaded extension and restored old Debug Listener");
+    setup = false;
 }
 
 //Natives
@@ -194,7 +182,7 @@ cell_t sm_CTFLogError (IPluginContext *pContext, const cell_t *params)
     }
     char *str;
     pContext->LocalToString (params [1], &str);
-    auto baseMessage = debugListener.GetBaseMessage (pluginFileName.c_str(), str);
+    const auto baseMessage = debugListener.GetBaseMessage (pluginFileName.c_str(), str);
     sentry_capture_event (baseMessage);
     string printMessage = string (SMEXT_CONF_NAME) + " captured a manual error: " + string (str);
     printf (printMessage.c_str());
