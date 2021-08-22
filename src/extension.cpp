@@ -31,6 +31,7 @@ SMEXT_LINK(&g_Sample);
 DebugListener debugListener;
 shared_ptr<CTFErrorLoggerConfig> config;
 unique_ptr<SMErrorLogReader> errorLogWatcher;
+bool setup = false;
 
 //Callback so we can setup the extension when the sentry url convar has been set.
 //Required as the extension is loaded before convars exist.
@@ -52,8 +53,6 @@ ConVar ce_environment("ce_environment", "staging", 0, "Server Environment (stagi
 ConVar ce_region("ce_region", "EU", 0, "Server Region");
 ConVar ce_logreaderwaittime("ce_logreaderwaittime", "120", 0);
 ConVar ce_type("ce_type", "", 0, "Server Type");
-
-bool setup = false;
 
 /** 
  * Class to allow our convars to be properly registered.
