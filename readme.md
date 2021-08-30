@@ -3,6 +3,8 @@ Log sourcemod errors and sourcepawn exceptions to a [sentry.io](https://sentry.i
 
 Originaly made for use on Creators.TF servers, but can be used on any TF2 server running sourcemod.
 
+![Preview of the Sentry dashboard](preview.png)
+
 ## Setup
 On your Sentry.io instance, set up a project and get the SDK DSN url. Use this as the value for ``ce_sentry_dsn_url``.
 
