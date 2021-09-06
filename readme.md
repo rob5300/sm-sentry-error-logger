@@ -14,7 +14,16 @@ Create a .autoload file if you want the plugin to load on server start *(e.g. ct
 ## Requirements
 A TF2 server running an up to date version of sourcemod.
 
-Linux servers require curl4 to be installed.
+Linux servers require **curl4** (x32 bit version) to be installed. 
+
+If you see an error message such as "``libcurl.so.4: cannot open shared object file: No such file or directory``" when trying to load the extension, you are missing curl4.
+
+### How to install curl 4 via apt for Debian/Ubuntu based distros:
+- Allow installing x32 bit versions of packages: ``sudo dpkg --add-architecture i386``
+
+- Update apt sources: ``sudo apt-get update``
+
+- Install i368(x32) version of curl 4: ``sudo apt-get install libcurl4:i386``
 
 ## Convars
 - ``ce_sentry_dsn_url`` Sentry DSN url, required. Extension will not setup without this.
