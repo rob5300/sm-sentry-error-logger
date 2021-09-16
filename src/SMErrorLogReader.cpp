@@ -2,6 +2,7 @@
 #include <chrono>
 #include <thread>
 #include <fstream>
+#include "smsdk_config.h"
 
 using namespace std;
 
@@ -25,10 +26,14 @@ SMErrorLogReader::SMErrorLogReader (string &_errorLogPath, ConVar* _waitTime)
     ifstream errorLog(newestErrorLogPath);
     string line;
     //Populate all existing log file dates so these can be ignored as they are not "new"
-    while (getline(errorLog, line)) {
-        pastLogContents.insert(line.substr(0, ERROR_DATETIME_LEN));
+    while (getline(errorLog, line))
+    {
+        if (line.length() > ERROR_DATETIME_LEN)
+        {
+            pastLogContents.insert(line.substr(0, ERROR_DATETIME_LEN));
+        }
     }
-
+    printf("[%s] Found %u lines already in error log to be ignored.\n", SMEXT_CONF_NAME, pastLogContents.size());
     active = true;
     //Start a new thread which will re check the error log for new errors.
     thread = make_unique<std::thread>([this](){WatchErrorLog();});
@@ -41,23 +46,24 @@ void SMErrorLogReader::WatchErrorLog ()
         filesystem::path newestErrorLogPath = GetLatestErrorLogPath();
         ifstream errorLog(newestErrorLogPath);
         string line;
-        while (getline(errorLog, line)) {
-            //Get the date+time component
-            string dateTimeSubStr = line.substr(0, ERROR_DATETIME_LEN);
-            //Get the error message component
-            string errorContents = line.substr(ERROR_DATETIME_LEN);
+        while (getline(errorLog, line))
+        {
+            if(line.length() > ERROR_DATETIME_LEN){
+                //Get the date+time component
+                string dateTimeSubStr = line.substr(0, ERROR_DATETIME_LEN);
+                //Get the error message component
+                string errorContents = line.substr(ERROR_DATETIME_LEN);
 
-            //Log this error if this date+time was not already seen, and if the error doesnt have the ignored strings in it.
-            if (!ContainsIgnoredStrings(errorContents) && pastLogContents.count(dateTimeSubStr) == 0)
-            {
-                pastLogContents.insert(dateTimeSubStr);
-                printf((string("[SMErrorLogReader] New Error was found in the SM Error Log: '") + errorContents + string("'\n")).c_str());
-                if(EventReciever != nullptr) EventReciever->OnSMErrorFound(errorContents);
+                //Log this error if this date+time was not already seen, and if the error doesnt have the ignored strings in it.
+                if (!ContainsIgnoredStrings(errorContents) && pastLogContents.count(dateTimeSubStr) == 0)
+                {
+                    pastLogContents.insert(dateTimeSubStr);
+                    printf("[%s] New Error was found in the SM Error Log: '%s'.\n", SMEXT_CONF_NAME, errorContents.c_str());
+                    if(EventReciever != nullptr) EventReciever->OnSMErrorFound(errorContents);
+                }
             }
         }
-        const string message = string("[SMErrorLogReader] Error Log '") + newestErrorLogPath.filename().generic_string() + string("' was checked for new errors. Next try in ") + waitTime->GetString() + string(" seconds\n");
-        printf(message.c_str());
-
+        printf("[%s] Error Log '%s' was checked for new errors. Next try in %.0f seconds.\n'", SMEXT_CONF_NAME, newestErrorLogPath.filename().string().c_str(), waitTime->GetFloat());
         if(!active) return;
 
         //Wait for the specified time to check the logs again.

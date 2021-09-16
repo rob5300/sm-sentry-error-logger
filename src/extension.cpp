@@ -71,20 +71,19 @@ public:
 
 void CTFErrorLogger::Print(const char* toPrint)
 {
-	string newString = "[" + string(SMEXT_CONF_NAME) + "] " + string(toPrint) + "\n";
-	printf(newString.c_str());
+	printf("[%s] %s.\n", SMEXT_CONF_NAME, toPrint);
 }
 
 bool CTFErrorLogger::TrySetup()
 {
     if(setup || g_pCVar == nullptr) return false;
 
-    auto cvar = g_pCVar->FindVar("ce_sentry_dsn_url");
+    const ConVar* dsnCvar = g_pCVar->FindVar("ce_sentry_dsn_url");
 
-    if(cvar != nullptr)
+    if(dsnCvar != nullptr)
     {
         //Setup now if we have a value for the sentry url convar.
-        string newDsnUrl = string(cvar->GetString());
+        string newDsnUrl = string(dsnCvar->GetString());
         if (newDsnUrl.length() > 0 && !setup)
         {
             Setup();
