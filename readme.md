@@ -46,12 +46,20 @@ If you see an error message such as "``libcurl.so.4: cannot open shared object f
 If you experience a new bug/crash, please create an issue here.
 
 ## Building
-Ensure you have the required dependencies for [building Sourcemod](https://wiki.alliedmods.net/Building_sourcemod).
+- Ensure you have the required dependencies for [building Sourcemod](https://wiki.alliedmods.net/Building_sourcemod).
+- Currently, the sourcemod and sdk dependency locations are assumed to be where they exist for the sample extensions, so clone this repo into <sourcemod repo>/public folder. Metamod, Sourcemod and hl2sdk-tf2 are needed.
+- Prebuilt sentry libs are included already.
 
-Currently, the sourcemod and sdk dependency locations are assumed to be where they exist for the sample extensions, so clone this repo into <sourcemod repo>/public folder. Metamod, Sourcemod and hl2sdk-tf2 are needed.
 ### Linix:
 Use the provided make file via ``make``. Requires GCC 8 and above for full STD 17 support (w filesystem). 
+#### Building Sentry on Linux (optional)
+To build sentry configure cmake using ``cmake -B build -D SENTRY_BACKEND=inproc -D SENTRY_BUILD_SHARED_LIBS=OFF -D SENTRY_BUILD_FORCE32=ON``.
+
+Some fixes may need to be made to CMakeLists.txt to fix cmake generation:
+- If the x64 version of libcurl is still used when building, Replace ``target_link_libraries(sentry PRIVATE CURL::libcurl)`` with ``target_link_libraries(sentry PRIVATE "/usr/lib/i386-linux-gnu/libcurl.so")``. Check that the i386 version is installed also.
  
-Ambuild cannot be used due to linker errors.
+If ambuild fails, use ``make``.
 ### Windows:
 Open and build using the solution file (``ctferrorloggerext.sln``). Ambuild can also be used for windows.
+#### Building Sentry on Windows (optional)
+To build sentry, configure cmake using this cmd: ``cmake -B build -D SENTRY_BACKEND=inproc -D SENTRY_BUILD_SHARED_LIBS=OFF -DCMAKE_GENERATOR_PLATFORM=Win32 -D SENTRY_BUILD_RUNTIMESTATIC=ON``
