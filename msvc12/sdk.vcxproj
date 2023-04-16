@@ -476,7 +476,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>D:\VSProjects\SOURCEMOD\sourcemod\public\ctf_error_logger_ext\lib;..\..\..\sourcepawn\third_party\amtl\amtl;..\..\..\..\hl2sdk-tf2\public\;..\..\..\..\hl2sdk-tf2\public\tier1;..\..\..\..\mmsource-1.10\core;..;..\..;..\..\sourcepawn;..\..\..\sourcepawn\third_party\amtl\;..\..\..\..\mmsource-1.10\core\sourcehook;..\..\..\sourcepawn\include;..\..\..\..\hl2sdk-tf2\public\tier0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\sourcepawn\third_party\amtl\amtl;..\..\..\..\hl2sdk-tf2\public\;..\..\..\..\hl2sdk-tf2\public\tier1;..\..\..\..\mmsource-1.10\core;..;..\..;..\..\sourcepawn;..\..\..\sourcepawn\third_party\amtl\;..\..\..\..\mmsource-1.10\core\sourcehook;..\..\..\sourcepawn\include;..\..\..\..\hl2sdk-tf2\public\tier0;..\lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;SDK_EXPORTS;_CRT_SECURE_NO_DEPRECATE;SOURCEMOD_BUILD;KE_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -497,7 +497,7 @@
       <DataExecutionPrevention>
       </DataExecutionPrevention>
       <TargetMachine>MachineX86</TargetMachine>
-      <AdditionalDependencies>legacy_stdio_definitions.lib;version.lib;dbghelp.lib;winhttp.lib;odbccp32.lib;odbc32.lib;D:\VSProjects\SOURCEMOD\hl2sdk-tf2\lib\public\tier0.lib;D:\VSProjects\SOURCEMOD\hl2sdk-tf2\lib\public\tier1.lib;D:\VSProjects\SOURCEMOD\hl2sdk-tf2\lib\public\vstdlib.lib;D:\VSProjects\SOURCEMOD\hl2sdk-tf2\lib\public\mathlib.lib;D:\VSProjects\SOURCEMOD\sourcemod\public\ctf_error_logger_ext\lib\sentry.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>legacy_stdio_definitions.lib;version.lib;dbghelp.lib;winhttp.lib;odbccp32.lib;odbc32.lib;..\..\..\..\hl2sdk-tf2\lib\public\tier0.lib;..\..\..\..\hl2sdk-tf2\lib\public\tier1.lib;..\..\..\..\hl2sdk-tf2\lib\public\vstdlib.lib;..\..\..\..\hl2sdk-tf2\lib\public\mathlib.lib;..\lib\sentry.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <Version>1.2</Version>
     </Link>
     <PostBuildEvent>
