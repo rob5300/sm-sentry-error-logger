@@ -9,9 +9,6 @@
 #include <string>
 #include <filesystem>
 #include <IPluginSys.h>
-#ifdef _WIN32
-#define SENTRY_BUILD_STATIC
-#endif
 #include "extension.h"
 #include "tier1/iconvar.h"
 #include "convar.h"

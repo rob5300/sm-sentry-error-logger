@@ -186,6 +186,8 @@ class ExtensionConfig(object):
 
     if have_clang:
       cxx.cxxflags += ['-Wno-implicit-exception-spec-mismatch']
+      cxx.cxxflags += ['-Wno-register']
+      cxx.cxxflags += ['-Wno-address-of-temporary']
       if cxx.version >= 'apple-clang-5.1' or cxx.version >= 'clang-3.4':
         cxx.cxxflags += ['-Wno-deprecated-register']
       else:
@@ -256,6 +258,7 @@ class ExtensionConfig(object):
   def configure_linux(self, cxx):
     cxx.defines += ['_LINUX', 'POSIX']
     cxx.linkflags += ['-Wl,--exclude-libs,ALL', '-lm']
+    cxx.linkflags += ['-static-libstdc++']
     if cxx.vendor == 'gcc':
       cxx.linkflags += ['-static-libgcc']
     elif cxx.vendor == 'clang':
