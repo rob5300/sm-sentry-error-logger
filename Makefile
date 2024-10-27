@@ -215,7 +215,7 @@ MAKEFILE_NAME := $(CURDIR)/$(word $(words $(MAKEFILE_LIST)),$(MAKEFILE_LIST))
 $(BIN_DIR)/%.o: %.cpp
 	$(CPP) $(INCLUDE) $(CFLAGS) $(CPPFLAGS) -o $@ -c $<
 
-all: check
+all:
 	mkdir -p $(BIN_DIR)
 	ln -sf ../smsdk_ext.cpp
 	if [ "$(USEMETA)" = "true" ]; then \

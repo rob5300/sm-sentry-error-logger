@@ -18,10 +18,11 @@ string ignoreStrings[] = {
     "Exception reported"
 };
 
-SMErrorLogReader::SMErrorLogReader (string &_errorLogPath, ConVar* _waitTime)
+SMErrorLogReader::SMErrorLogReader (string &_errorLogPath, ConVar* _waitTime, ConVar* silent)
 {
 	errorLogPath = _errorLogPath;
     waitTime = _waitTime;
+    this->silent = silent;
     filesystem::path newestErrorLogPath = GetLatestErrorLogPath();
     ifstream errorLog(newestErrorLogPath);
     string line;
@@ -33,7 +34,12 @@ SMErrorLogReader::SMErrorLogReader (string &_errorLogPath, ConVar* _waitTime)
             pastLogContents.insert(line.substr(0, ERROR_DATETIME_LEN));
         }
     }
-    printf("[%s] Found %u lines already in error log to be ignored.\n", SMEXT_CONF_NAME, pastLogContents.size());
+
+    if (!silent->GetBool())
+    {
+        printf("[%s] Found %u lines already in error log to be ignored.\n", SMEXT_CONF_NAME, pastLogContents.size());
+    }
+
     active = true;
     //Start a new thread which will re check the error log for new errors.
     thread = make_unique<std::thread>([this](){WatchErrorLog();});
@@ -58,12 +64,22 @@ void SMErrorLogReader::WatchErrorLog ()
                 if (!ContainsIgnoredStrings(errorContents) && pastLogContents.count(dateTimeSubStr) == 0)
                 {
                     pastLogContents.insert(dateTimeSubStr);
-                    printf("[%s] New Error was found in the SM Error Log: '%s'.\n", SMEXT_CONF_NAME, errorContents.c_str());
+
+                    if (!silent->GetBool())
+                    {
+                         printf("[%s] New Error was found in the SM Error Log: '%s'.\n", SMEXT_CONF_NAME, errorContents.c_str());
+                    }
+
                     if(EventReciever != nullptr) EventReciever->OnSMErrorFound(errorContents);
                 }
             }
         }
-        printf("[%s] Error Log '%s' was checked for new errors. Next try in %.0f seconds.\n'", SMEXT_CONF_NAME, newestErrorLogPath.filename().string().c_str(), waitTime->GetFloat());
+
+        if (!silent->GetBool())
+        {
+            printf("[%s] Error Log '%s' was checked for new errors. Next try in %.0f seconds.\n'", SMEXT_CONF_NAME, newestErrorLogPath.filename().string().c_str(), waitTime->GetFloat());
+        }
+
         if(!active) return;
 
         //Wait for the specified time to check the logs again.
@@ -105,7 +121,7 @@ filesystem::path SMErrorLogReader::GetLatestErrorLogPath()
     return newestErrorLogPath;
 }
 
-bool SMErrorLogReader::ContainsIgnoredStrings(std::string& str)
+bool SMErrorLogReader::ContainsIgnoredStrings(const std::string& str)
 {
     for (const auto &ignore : ignoreStrings)
     {

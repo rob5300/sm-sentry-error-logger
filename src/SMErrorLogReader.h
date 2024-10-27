@@ -25,7 +25,7 @@ class SMErrorLogReader
 	public:
 		IErrorLogEventReciever* EventReciever;
 
-		SMErrorLogReader(std::string& _errorLogPath, ConVar* _waitTime);
+		SMErrorLogReader(std::string& _errorLogPath, ConVar* _waitTime, ConVar* silent);
 		/// <summary>
 		/// Stop the error log watcher thread.
 		/// </summary>
@@ -34,6 +34,7 @@ class SMErrorLogReader
 	private:
 		bool active;
 		ConVar* waitTime;
+		ConVar* silent;
 		std::string errorLogRegex;
 		std::string errorLogPath;
 		std::unordered_set<std::string> pastLogContents;
@@ -52,6 +53,6 @@ class SMErrorLogReader
 		/// <summary>
 		/// Check if this string contains any of the 'ignored' strings.
 		/// </summary>
-		bool ContainsIgnoredStrings(std::string& str);
+		bool ContainsIgnoredStrings(const std::string& str);
 };
 

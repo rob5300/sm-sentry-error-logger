@@ -51,8 +51,9 @@ ConVar ce_server_index("ce_server_index", "0", 0, "Server Numerical ID");
 ConVar ce_sentry_dsn_url("ce_sentry_dsn_url", "", 0, "Sentry DSN URL", OnChangeCoreConVar);
 ConVar ce_environment("ce_environment", "staging", 0, "Server Environment (staging/prod)");
 ConVar ce_region("ce_region", "EU", 0, "Server Region");
-ConVar ce_logreaderwaittime("ce_logreaderwaittime", "120", 0);
+ConVar ce_logreaderwaittime("ce_logreaderwaittime", "120", 0, "Wait time in seconds between each error log read");
 ConVar ce_type("ce_type", "", 0, "Server Type");
+ConVar ce_silent("ce_silent", "", 0, "If extension logging is disabled");
 
 /** 
  * Class to allow our convars to be properly registered.
@@ -96,6 +97,8 @@ bool CTFErrorLogger::TrySetup()
 
 void CTFErrorLogger::Setup()
 {
+    bool canLog = !ce_silent.GetBool();
+
     //Make new config and give it the pointer to the ICvar.
     config = make_shared<CTFErrorLoggerConfig> (g_pCVar);
     //Setup sentry
@@ -117,8 +120,12 @@ void CTFErrorLogger::Setup()
     if (spEngine != nullptr)
     {
         debugListener.config = config;
-        debugListener.onError = [this] () {
-            Print ("Error was logged");
+        ConVar* _silent = g_pCVar->FindVar("ce_silent");
+        debugListener.onError = [this, _silent] () {
+            if(!_silent->GetBool())
+            {
+                Print ("Error was logged");
+            }
         };
         auto oldListener = spEngine->SetDebugListener (&debugListener);
 
@@ -128,18 +135,25 @@ void CTFErrorLogger::Setup()
         Print ("Added Debug Listener");
     }
 
-    //Setup error log watcher
-    string errorLogPath = string(smutils->GetSourceModPath());
-    if (errorLogPath.length() > 0)
+    if(ce_logreaderwaittime.GetInt() > 0)
     {
-#ifdef _WIN32
-        errorLogPath += "\\logs";
-#else
-        errorLogPath += "/logs";
-#endif
-        errorLogWatcher = make_unique<SMErrorLogReader> (errorLogPath, config->logReaderWaitTime);
-        errorLogWatcher->EventReciever = &debugListener;
-        Print("ErrorLogReader was setup.");
+        //Setup error log watcher
+        string errorLogPath = string(smutils->GetSourceModPath());
+        if (errorLogPath.length() > 0)
+        {
+    #ifdef _WIN32
+            errorLogPath += "\\logs";
+    #else
+            errorLogPath += "/logs";
+    #endif
+            errorLogWatcher = make_unique<SMErrorLogReader> (errorLogPath, config->logReaderWaitTime, &ce_silent);
+            errorLogWatcher->EventReciever = &debugListener;
+            Print("ErrorLogReader was setup.");
+        }
+    }
+    else
+    {
+        Print("ErrorLogReader wait time is <0, initialisation skipped.");
     }
 
     setup = true;
@@ -182,8 +196,13 @@ cell_t sm_CTFLogError (IPluginContext *pContext, const cell_t *params)
     pContext->LocalToString (params [1], &str);
     const auto baseMessage = debugListener.GetBaseMessage (pluginFileName.c_str(), str);
     sentry_capture_event (baseMessage);
-    string printMessage = string (SMEXT_CONF_NAME) + " captured a manual error: " + string (str);
-    printf (printMessage.c_str());
+
+    if (!ce_silent.GetBool())
+    {
+        string printMessage = string (SMEXT_CONF_NAME) + " captured a manual error: " + string (str);
+        printf (printMessage.c_str());
+    }
+
     return 1;
 }
 

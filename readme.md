@@ -49,9 +49,12 @@ If you experience a new bug/crash, please create an issue here.
 Ensure you have the required dependencies for [building Sourcemod](https://wiki.alliedmods.net/Building_sourcemod).
 
 Currently, the sourcemod and sdk dependency locations are assumed to be where they exist for the sample extensions, so clone this repo into <sourcemod repo>/public folder. Metamod, Sourcemod and hl2sdk-tf2 are needed.
-### Linix:
-Use the provided make file via ``make``. Requires GCC 8 and above for full STD 17 support (w filesystem). 
- 
-Ambuild cannot be used due to linker errors.
+### Linux:
+Install/update ``g++``, ``gcc``, ``g++-multilib``, ``gcc-multilib`` and ``libcurl4-openssl-dev:i386`` via your package manager.
+
+> [!IMPORTANT]
+> If libcurl4-openssl-dev:i386 cannot be installed via your package manager (due to an error) the x64 version may need to be removed.
+
+Use the provided make file via ``make``. Requires GCC 8 and above for full STD 17 support (w filesystem). (Ambuild cannot be used due to linker errors).
 ### Windows:
 Open and build using the solution file (``ctferrorloggerext.sln``). Ambuild can also be used for windows.
