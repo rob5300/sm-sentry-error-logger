@@ -224,14 +224,7 @@ all:
 	fi
 	$(MAKE) -f $(MAKEFILE_NAME) extension
 
-check:
-	if [ "$(USEMETA)" = "true" ] && [ "$(ENGSET)" = "false" ]; then \
-		echo "You must supply one of the following values for ENGINE:"; \
-		echo "csgo, left4dead2, left4dead, css, orangeboxvalve, orangebox, or original"; \
-		exit 1; \
-	fi
-
-extension: check $(OBJ_BIN)
+extension: $(OBJ_BIN)
 	$(CPP) $(INCLUDE) $(OBJ_BIN) $(LINK) -o $(BIN_DIR)/$(BINARY)
 
 debug:
@@ -239,7 +232,7 @@ debug:
 
 default: all
 
-clean: check
+clean:
 	rm -rf $(BIN_DIR)/*.o
 	rm -rf $(BIN_DIR)/$(BINARY)
 

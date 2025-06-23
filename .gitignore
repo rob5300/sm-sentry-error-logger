@@ -7,5 +7,5 @@ build/
 *.obj
 obj-linux-x86_64/
 obj-windows-AMD64/
-msvc12/Debug/
+msvc12/build/
 Release.*/

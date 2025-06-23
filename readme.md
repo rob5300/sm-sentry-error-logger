@@ -1,7 +1,7 @@
 # Sourcemod Sentry Error Logger
 Log sourcemod errors and sourcepawn exceptions to a [sentry.io](https://sentry.io/welcome/) instance.
 
-Originaly made for use on Creators.TF servers, but can be used on any TF2 server running sourcemod.
+Originally made for use on Creators.TF servers, but can be used on any TF2 server running sourcemod.
 
 ![Preview of the Sentry dashboard](preview.png)
 
@@ -38,6 +38,8 @@ If you see an error message such as "``libcurl.so.4: cannot open shared object f
 
 - ``ce_type`` Server type (not required)
 
+- ``ce_silent`` If extension logging is disabled
+
 ## Known Issues
 - The extension may not properly work if it is unloaded then reloaded, but unloading should be fine.
 
@@ -55,6 +57,6 @@ Install/update ``g++``, ``gcc``, ``g++-multilib``, ``gcc-multilib`` and ``libcur
 > [!IMPORTANT]
 > If libcurl4-openssl-dev:i386 cannot be installed via your package manager (due to an error) the x64 version may need to be removed.
 
-Use the provided make file via ``make``. Requires GCC 8 and above for full STD 17 support (w filesystem). (Ambuild cannot be used due to linker errors).
+Use the provided make file via ``make``. Requires GCC 8 or higher. (Ambuild cannot be used due to linker errors).
 ### Windows:
-Open and build using the solution file (``ctferrorloggerext.sln``). Ambuild can also be used for windows.
+Open and build using the solution file with "Debug" or "Release" profiles (``ctferrorloggerext.sln``).

@@ -468,10 +468,103 @@
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Release - Orange Box|Win32'">sample.ext.2.ep2</TargetName>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Release - Bloody Good Time|Win32'">sample.ext.2.bgt</TargetName>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Release - EYE|Win32'">sample.ext.2.eye</TargetName>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">sample.ext</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CTFErrorLogger.ext.2.tf2</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>$(SolutionDir)build</OutDir>
+    <OutDir>$(SolutionDir)/build/$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)/build/$(ShortProjectName)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(SolutionDir)/build/$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)/build/$(ShortProjectName)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug - Alien Swarm|Win32'">
+    <OutDir>$(SolutionDir)/build/$(Configuration)/</OutDir>
+    <IntDir>$(SolutionDir)/build/$(ShortProjectName)/$(Configuration)/</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug - CSGO|Win32'">
+    <OutDir>$(SolutionDir)/build/$(Configuration)/</OutDir>
+    <IntDir>$(SolutionDir)/build/$(ShortProjectName)/$(Configuration)/</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug - CSS|Win32'">
+    <OutDir>$(SolutionDir)/build/$(Configuration)/</OutDir>
+    <IntDir>$(SolutionDir)/build/$(ShortProjectName)/$(Configuration)/</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug - Dark Messiah|Win32'">
+    <OutDir>$(SolutionDir)/build/$(Configuration)/</OutDir>
+    <IntDir>$(SolutionDir)/build/$(ShortProjectName)/$(Configuration)/</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug - Episode 1|Win32'">
+    <OutDir>$(SolutionDir)/build/$(Configuration)/</OutDir>
+    <IntDir>$(SolutionDir)/build/$(ShortProjectName)/$(Configuration)/</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug - Left 4 Dead|Win32'">
+    <OutDir>$(SolutionDir)/build/$(Configuration)/</OutDir>
+    <IntDir>$(SolutionDir)/build/$(ShortProjectName)/$(Configuration)/</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug - Left 4 Dead 2|Win32'">
+    <OutDir>$(SolutionDir)/build/$(Configuration)/</OutDir>
+    <IntDir>$(SolutionDir)/build/$(ShortProjectName)/$(Configuration)/</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug - Old Metamod|Win32'">
+    <OutDir>$(SolutionDir)/build/$(Configuration)/</OutDir>
+    <IntDir>$(SolutionDir)/build/$(ShortProjectName)/$(Configuration)/</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug - Orange Box|Win32'">
+    <OutDir>$(SolutionDir)/build/$(Configuration)/</OutDir>
+    <IntDir>$(SolutionDir)/build/$(ShortProjectName)/$(Configuration)/</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug - Orange Box Valve|Win32'">
+    <OutDir>$(SolutionDir)/build/$(Configuration)/</OutDir>
+    <IntDir>$(SolutionDir)/build/$(ShortProjectName)/$(Configuration)/</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release - Alien Swarm|Win32'">
+    <OutDir>$(SolutionDir)/build/$(Configuration)/</OutDir>
+    <IntDir>$(SolutionDir)/build/$(ShortProjectName)/$(Configuration)/</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release - Bloody Good Time|Win32'">
+    <OutDir>$(SolutionDir)/build/$(Configuration)/</OutDir>
+    <IntDir>$(SolutionDir)/build/$(ShortProjectName)/$(Configuration)/</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release - CSGO|Win32'">
+    <OutDir>$(SolutionDir)/build/$(Configuration)/</OutDir>
+    <IntDir>$(SolutionDir)/build/$(ShortProjectName)/$(Configuration)/</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release - CSS|Win32'">
+    <OutDir>$(SolutionDir)/build/$(Configuration)/</OutDir>
+    <IntDir>$(SolutionDir)/build/$(ShortProjectName)/$(Configuration)/</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release - Dark Messiah|Win32'">
+    <OutDir>$(SolutionDir)/build/$(Configuration)/</OutDir>
+    <IntDir>$(SolutionDir)/build/$(ShortProjectName)/$(Configuration)/</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release - Episode 1|Win32'">
+    <OutDir>$(SolutionDir)/build/$(Configuration)/</OutDir>
+    <IntDir>$(SolutionDir)/build/$(ShortProjectName)/$(Configuration)/</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release - EYE|Win32'">
+    <OutDir>$(SolutionDir)/build/$(Configuration)/</OutDir>
+    <IntDir>$(SolutionDir)/build/$(ShortProjectName)/$(Configuration)/</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release - Left 4 Dead|Win32'">
+    <OutDir>$(SolutionDir)/build/$(Configuration)/</OutDir>
+    <IntDir>$(SolutionDir)/build/$(ShortProjectName)/$(Configuration)/</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release - Left 4 Dead 2|Win32'">
+    <OutDir>$(SolutionDir)/build/$(Configuration)/</OutDir>
+    <IntDir>$(SolutionDir)/build/$(ShortProjectName)/$(Configuration)/</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release - Old Metamod|Win32'">
+    <OutDir>$(SolutionDir)/build/$(Configuration)/</OutDir>
+    <IntDir>$(SolutionDir)/build/$(ShortProjectName)/$(Configuration)/</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release - Orange Box|Win32'">
+    <OutDir>$(SolutionDir)/build/$(Configuration)/</OutDir>
+    <IntDir>$(SolutionDir)/build/$(ShortProjectName)/$(Configuration)/</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release - Orange Box Valve|Win32'">
+    <OutDir>$(SolutionDir)/build/$(Configuration)/</OutDir>
+    <IntDir>$(SolutionDir)/build/$(ShortProjectName)/$(Configuration)/</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -507,7 +600,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <AdditionalIncludeDirectories>..;..\..;..\..\sourcepawn;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\sourcepawn\third_party\amtl\amtl;..\..\..\..\hl2sdk-tf2\public\;..\..\..\..\hl2sdk-tf2\public\tier1;..\..\..\..\mmsource-1.10\core;..;..\..;..\..\sourcepawn;..\..\..\sourcepawn\third_party\amtl\;..\..\..\..\mmsource-1.10\core\sourcehook;..\..\..\sourcepawn\include;..\..\..\..\hl2sdk-tf2\public\tier0;..\lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;SDK_EXPORTS;_CRT_SECURE_NO_DEPRECATE;SOURCEMOD_BUILD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
@@ -517,6 +610,7 @@
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <AdditionalOptions>/MP /D SE_EPISODEONE=1 /D SE_DARKMESSIAH=2 /D SE_ORANGEBOX=3 /D SE_BLOODYGOODTIME=4 /D SE_EYE=5 /D SE_CSS=6 /D SE_ORANGEBOXVALVE=7 /D SE_LEFT4DEAD=8 /D SE_LEFT4DEAD2=9 /D SE_ALIENSWARM=10 /D SE_PORTAL2=11 /D SE_CSGO=12</AdditionalOptions>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMTD;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
@@ -528,6 +622,7 @@
       <DataExecutionPrevention>
       </DataExecutionPrevention>
       <TargetMachine>MachineX86</TargetMachine>
+      <AdditionalDependencies>legacy_stdio_definitions.lib;version.lib;dbghelp.lib;winhttp.lib;odbccp32.lib;odbc32.lib;..\..\..\..\hl2sdk-tf2\lib\public\tier0.lib;..\..\..\..\hl2sdk-tf2\lib\public\tier1.lib;..\..\..\..\hl2sdk-tf2\lib\public\vstdlib.lib;..\..\..\..\hl2sdk-tf2\lib\public\mathlib.lib;..\lib\sentry.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug - Old Metamod|Win32'">
