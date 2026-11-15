@@ -18,11 +18,13 @@ string ignoreStrings[] = {
     "Exception reported"
 };
 
-SMErrorLogReader::SMErrorLogReader (string &_errorLogPath, ConVar* _waitTime, ConVar* silent)
+SMErrorLogReader::SMErrorLogReader (string &_errorLogPath, ConVar* _waitTime, ConVar* silent, IErrorLogEventReciever* eventReciever)
 {
 	errorLogPath = _errorLogPath;
     waitTime = _waitTime;
     this->silent = silent;
+    //Set before the watcher thread starts, because the thread reads it.
+    EventReciever = eventReciever;
     filesystem::path newestErrorLogPath = GetLatestErrorLogPath();
     ifstream errorLog(newestErrorLogPath);
     string line;
@@ -90,7 +92,7 @@ void SMErrorLogReader::WatchErrorLog ()
     }
 }
 
-void SMErrorLogReader::Stop()
+SMErrorLogReader::~SMErrorLogReader()
 {
     //Trigger the condition variable to stop waiting early so we can join and stop the thread now.
     printf("Attempting to stop WatchErrorLog thread...\n");
@@ -105,17 +107,28 @@ void SMErrorLogReader::Stop()
 filesystem::path SMErrorLogReader::GetLatestErrorLogPath()
 {
     filesystem::path newestErrorLogPath;
-    filesystem::file_time_type* lastModifyTime = nullptr;
-    for (const auto &entry : filesystem::directory_iterator(errorLogPath))
+    filesystem::file_time_type lastModifyTime;
+    //Catch filesystem errors (logs folder missing, file deleted during the scan). An uncaught exception stops the server.
+    try
     {
-        //Make sure this is a file + the filename has 'error' in it.
-        if (entry.is_regular_file () && entry.path().filename().generic_string().find("error") != string::npos)
+        for (const auto &entry : filesystem::directory_iterator(errorLogPath))
         {
-            if (lastModifyTime == nullptr || entry.last_write_time() > *lastModifyTime)
+            //Make sure this is a file + the filename has 'error' in it.
+            if (entry.is_regular_file () && entry.path().filename().generic_string().find("error") != string::npos)
             {
-                lastModifyTime = &entry.last_write_time();
-                newestErrorLogPath = entry.path();
+                if (newestErrorLogPath.empty() || entry.last_write_time() > lastModifyTime)
+                {
+                    lastModifyTime = entry.last_write_time();
+                    newestErrorLogPath = entry.path();
+                }
             }
+        }
+    }
+    catch (const filesystem::filesystem_error& e)
+    {
+        if (!silent->GetBool())
+        {
+            printf("[%s] Could not scan the error log folder: %s\n", SMEXT_CONF_NAME, e.what());
         }
     }
     return newestErrorLogPath;

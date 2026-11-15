@@ -6,6 +6,7 @@
 #include <thread>
 #include <mutex>
 #include <condition_variable>
+#include <atomic>
 #include "convar.h"
 
 /// <summary>
@@ -25,14 +26,14 @@ class SMErrorLogReader
 	public:
 		IErrorLogEventReciever* EventReciever;
 
-		SMErrorLogReader(std::string& _errorLogPath, ConVar* _waitTime, ConVar* silent);
+		SMErrorLogReader(std::string& _errorLogPath, ConVar* _waitTime, ConVar* silent, IErrorLogEventReciever* eventReciever);
 		/// <summary>
-		/// Stop the error log watcher thread.
+		/// Stop and join the error log watcher thread.
 		/// </summary>
-		void Stop();
+		~SMErrorLogReader();
 
 	private:
-		bool active;
+		std::atomic<bool> active;
 		ConVar* waitTime;
 		ConVar* silent;
 		std::string errorLogRegex;
